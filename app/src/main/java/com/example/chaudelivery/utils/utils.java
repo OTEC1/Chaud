@@ -19,10 +19,16 @@ import com.example.chaudelivery.UI.account;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 
+import java.util.Objects;
+
 public class utils {
 
 
 
+    //Cache on  temp data on User machine
+    public SharedPreferences instantiate_shared_preferences(SharedPreferences s, Context view) {
+        return s = Objects.requireNonNull(view.getSharedPreferences(view.getString(R.string.app_name), Context.MODE_PRIVATE));
+    }
 
 
 
