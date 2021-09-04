@@ -89,6 +89,9 @@ public class User implements Parcelable {
         this.token = token;
     }
 
+
+
+
     @Override
     public String toString() {
         return "User{" +

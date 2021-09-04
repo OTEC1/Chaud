@@ -18,7 +18,6 @@ import static com.example.chaudelivery.utils.Constant.*;
 public class RegisterUser extends AsyncTask<Void,Void,Object> {
 
     private Activity activity;
-    private SharedPreferences sp;
     private String TAG ="RegisterUser";
 
     public RegisterUser(Activity context) {
@@ -46,17 +45,17 @@ public class RegisterUser extends AsyncTask<Void,Void,Object> {
 
        if(o instanceof Exception){
            Log.d(TAG,  o.toString());
-           new utils().instantiate_shared_preferences(sp, activity.getApplicationContext())
+           new utils().instantiate_shared_preferences(activity.getApplicationContext())
                    .edit().putBoolean(activity.getString(R.string.DEVICE_REG_TOKEN),false).apply();
 
-           new utils().instantiate_shared_preferences(sp, activity.getApplicationContext())
+           new utils().instantiate_shared_preferences(activity.getApplicationContext())
                    .edit().putString(activity.getString(R.string.DEVICE_TOKEN),"").apply();
        }
        else{
-           new utils().instantiate_shared_preferences(sp, activity.getApplicationContext())
+           new utils().instantiate_shared_preferences(activity.getApplicationContext())
                    .edit().putBoolean(activity.getString(R.string.DEVICE_REG_TOKEN),true).apply();
 
-           new utils().instantiate_shared_preferences(sp, activity.getApplicationContext())
+           new utils().instantiate_shared_preferences(activity.getApplicationContext())
                    .edit().putString(activity.getString(R.string.DEVICE_TOKEN),String.valueOf(o)).apply();
        }
 

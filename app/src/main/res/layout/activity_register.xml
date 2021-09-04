@@ -115,12 +115,27 @@
 
 
                 <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/btn_register"
+                    android:id="@+id/photo_selector"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/input_confirm_password"
                     android:layout_centerHorizontal="true"
-                    android:layout_marginTop="35dp"
+                    android:layout_marginTop="15dp"
+                    android:background="@android:color/transparent"
+                    android:text="Choose image"
+                    android:textAllCaps="false"
+                    android:textColor="#000" />
+
+
+
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btn_register"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/photo_selector"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="15dp"
                     android:background="@drawable/back_button"
                     android:text="Register"
                     android:textAllCaps="false"

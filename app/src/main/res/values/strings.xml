@@ -1,6 +1,6 @@
 <resources>
     <string name="google_api_key02">AIzaSyCgGJYijiCtS6cNwHhmVAUcKChNVpppewU</string>
-    <string name="app_name">Chaüdeliveries</string>
+    <string name="app_name">ChaüD</string>
     <string name="prompt_email">Email</string>
     <string name="password">Password</string>
     <string name="sign_in">Sign in</string>
@@ -10,4 +10,10 @@
     <string name="DEVICE_REG_TOKEN">DEVICE_REG_TOKEN</string>
     <string name="DEVICE_TOKEN">DEVICE_TOKEN</string>
     <string name="delivery_location">Delivery Location</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="forgot_password">Forgot Password</string>
+    <string name="forgot_email">Email</string>
+    <string name="DELIVERY_REG">Delivery Registration</string>
+    <string name="DELIVERY_LOCATION">Delivery Location</string>
 </resources>
