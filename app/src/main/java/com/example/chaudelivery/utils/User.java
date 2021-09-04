@@ -1,4 +1,4 @@
-package com.example.chaudelivery.model;
+package com.example.chaudelivery.utils;
 
 import android.os.Parcel;
 import android.os.Parcelable;

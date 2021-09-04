@@ -78,12 +78,6 @@
             android:enabled="true" />
 
         <service
-            android:name=".Running_Service.LocationService"
-            android:stopWithTask="true"
-            android:enabled="false"
-            />
-
-        <service
             android:name="com.amazonaws.mobileconnectors.s3.transferutility.TransferService"
             android:enabled="true" />
 

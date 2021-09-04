@@ -1,4 +1,4 @@
-package com.example.chaudelivery.model;
+package com.example.chaudelivery.utils;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -11,16 +11,15 @@ import java.util.Date;
 public class UserLocation implements Parcelable {
 
     private GeoPoint geo_point;
-    private @ServerTimestamp
-    Date timestamp;
-    private com.example.chaudelivery.model.User user;
+    private @ServerTimestamp Date timestamp;
+    private User user;
 
 
     public UserLocation() {
 
     }
 
-    public UserLocation(GeoPoint geo_point, Date timestamp, com.example.chaudelivery.model.User user) {
+    public UserLocation(GeoPoint geo_point, Date timestamp, User user) {
         this.geo_point = geo_point;
         this.timestamp = timestamp;
         this.user = user;
@@ -60,11 +59,11 @@ public class UserLocation implements Parcelable {
     }
 
 
-    public com.example.chaudelivery.model.User getUser() {
+    public User getUser() {
         return user;
     }
 
-    public void setUser(com.example.chaudelivery.model.User user) {
+    public void setUser(User user) {
         this.user = user;
     }
 
@@ -78,7 +77,7 @@ public class UserLocation implements Parcelable {
 
 
     protected UserLocation(Parcel in) {
-        user = in.readParcelable(com.example.chaudelivery.model.User.class.getClassLoader());
+        user = in.readParcelable(User.class.getClassLoader());
     }
 
 
