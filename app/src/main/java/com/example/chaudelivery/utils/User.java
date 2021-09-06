@@ -7,7 +7,7 @@ public class User implements Parcelable {
 
     private String email, user_id, username,
              name,phone,member_T,
-             img_url,token;
+             img_url,token,delivery_details;
 
 
     private  int fair,good,bad;
@@ -20,6 +20,7 @@ public class User implements Parcelable {
 
 
     public User(Parcel in) {
+       name = in.readString();
         email = in.readString();
         user_id = in.readString();
         username = in.readString();
@@ -28,6 +29,7 @@ public class User implements Parcelable {
         good =in.readInt();
         fair =in.readInt();
         bad =in.readInt();
+        delivery_details =in.readString();
 
     }
 
@@ -89,24 +91,12 @@ public class User implements Parcelable {
         this.token = token;
     }
 
+    public String getDelivery_details() {
+        return delivery_details;
+    }
 
-
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "email='" + email + '\'' +
-                ", user_id='" + user_id + '\'' +
-                ", username='" + username + '\'' +
-                ", name='" + name + '\'' +
-                ", phone='" + phone + '\'' +
-                ", member_T='" + member_T + '\'' +
-                ", img_url='" + img_url + '\'' +
-                ", token='" + token + '\'' +
-                ", fair=" + fair +
-                ", good=" + good +
-                ", bad=" + bad +
-                '}';
+    public void setDelivery_details(String delivery_details) {
+        this.delivery_details = delivery_details;
     }
 
     public String getPhone() {
@@ -168,6 +158,7 @@ public class User implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(name);
         dest.writeString(email);
         dest.writeString(user_id);
         dest.writeString(username);
@@ -176,6 +167,7 @@ public class User implements Parcelable {
         dest.writeInt(good);
         dest.writeInt(fair);
         dest.writeInt(bad);
+        dest.writeString(delivery_details);
 
     }
 }

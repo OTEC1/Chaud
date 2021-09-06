@@ -53,27 +53,30 @@ import static com.example.chaudelivery.utils.Constant.GPRS_INTERVAL;
 import static com.example.chaudelivery.utils.Constant.PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;
 import static com.example.chaudelivery.utils.Constant.PERMISSIONS_REQUEST_ENABLE_GPS;
 import static com.example.chaudelivery.utils.Constant.READ_STORAGE_PERMISSION_REQUEST_CODE;
+import static com.example.chaudelivery.utils.Constant.Time_lapsed;
 import static com.example.chaudelivery.utils.Constant.UPDATE_INTERVAL;
 
 public class MainActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNavigationView;
+    private DocumentReference documentReference;
     private Task<DocumentSnapshot> task1;
     private UserLocation muserLocation;
     private SharedPreferences sp;
-    private  Keep_alive keep_alive;
-    private  Intent intent;
+    private Keep_alive keep_alive;
+    private Intent intent;
 
-    private  String TAG ="MainActivity";
-    private  boolean mLocationPermissionGranted = false;
 
+    private long back_pressed;
+    private String TAG = "MainActivity";
+    private boolean mLocationPermissionGranted = false;
 
 
     @Override
     protected void onResume() {
         super.onResume();
         if (FirebaseAuth.getInstance().getUid() != null) {
-        new utils().openFragment(new notification(),"notification",1,this);
+            new utils().openFragment(new notification(), "notification", 1, this);
             if (checkMapServices()) {
                 if (mLocationPermissionGranted) {
                     getUserDetails();
@@ -89,19 +92,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if(FirebaseAuth.getInstance().getUid() ==null)
-            startActivity(new Intent(getApplicationContext(),Login.class));
+        if (FirebaseAuth.getInstance().getUid() == null)
+            startActivity(new Intent(getApplicationContext(), Login.class));
 
         setContentView(R.layout.activity_main);
         bottomNavigationView = findViewById(R.id.bottomNav);
-        new utils().bottom_nav(bottomNavigationView,this,sp);
+        new utils().bottom_nav(bottomNavigationView, this, sp);
         NOTIFICATION_LISTER();
         POLICY_SERVICE();
         CHECK_FOR_PERMISSION();
     }
-
-
-
 
 
     private void NOTIFICATION_LISTER() {
@@ -138,10 +138,9 @@ public class MainActivity extends AppCompatActivity {
         intent.setClass(this, PushReceiver.class);
         intent.putExtra("O", "1");
         this.sendBroadcast(intent);
-       // aboolean = true;
+        // aboolean = true;
         super.onDestroy();
     }
-
 
 
     //Step 1
@@ -289,14 +288,11 @@ public class MainActivity extends AppCompatActivity {
     private void getUserDetails() {
         if (muserLocation == null) {
             DocumentReference user_ref = FirebaseFirestore.getInstance().collection(getString(R.string.DELIVERY_REG)).document(Objects.requireNonNull(FirebaseAuth.getInstance().getUid()));
-            user_ref.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()) {
-                        Log.d(TAG, " onComplete successfully got details");
-                        task1 = task;
-                        getLast_know_Location(task1);
-                    }
+            user_ref.get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    Log.d(TAG, " onComplete successfully got details");
+                    task1 = task;
+                    getLast_know_Location(task1);
                 }
             });
         } else
@@ -325,8 +321,8 @@ public class MainActivity extends AppCompatActivity {
                         GeoPoint geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
                         User user = task.getResult().toObject(User.class);
                         muserLocation = new UserLocation(geoPoint, null, user);
-                        if (FirebaseAuth.getInstance().getUid() != null && geoPoint.getLatitude()>0 && geoPoint.getLongitude()>0)
-                            saveUserLocation(geoPoint.getLatitude(),geoPoint.getLongitude());
+                        if (FirebaseAuth.getInstance().getUid() != null && geoPoint.getLatitude() > 0 && geoPoint.getLongitude() > 0)
+                            saveUserLocation(muserLocation);
 
                     }
                 }
@@ -335,7 +331,30 @@ public class MainActivity extends AppCompatActivity {
         LocationServices.getFusedLocationProviderClient(getApplicationContext()).requestLocationUpdates(mLocationRequest, mLocationCallback, null);
     }
 
-    private void saveUserLocation(double latitude, double longitude) {
-        Log.d(TAG, "saveUserLocation: "+latitude+"   "+longitude);
+    private void saveUserLocation(UserLocation muserLocation) {
+
+        FirebaseFirestore.getInstance().collection(getString(R.string.DELIVERY_LOCATION)).document(FirebaseAuth.getInstance().getUid())
+                .set(muserLocation).addOnCompleteListener(o -> {
+            if (o.isSuccessful())
+                System.out.println();
+            else
+                new utils().message2("Error Occurred on data insert: " + o.getException(), this);
+
+
+        });
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        new utils().message("Press twice to exit", getApplicationContext());
+        if (back_pressed + Time_lapsed > System.currentTimeMillis()) {
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            back_pressed = System.currentTimeMillis();
+        } else
+            super.onBackPressed();
     }
 }

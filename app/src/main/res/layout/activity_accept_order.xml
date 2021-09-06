@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/purchase"
+    tools:context=".UI.Accept_Order">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:weightSum="100">
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_margin="10dp"
+            android:layout_weight="30">
+
+
+            <TextView
+                android:id="@+id/delivery_guy_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="20dp"
+                android:layout_marginRight="10dp"
+                android:text="Chau Delivery Guy: Obi One"
+                android:textColor="@color/Black" />
+
+
+            <TextView
+                android:id="@+id/Time_placed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/delivery_guy_name"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="3dp"
+                android:layout_marginRight="10dp"
+                android:text="Time: 5  minute Ago"
+                android:textColor="@color/Black" />
+
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/delivery_guy_img"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:layout_margin="5dp"
+                android:src="@color/White" />
+
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/accept_order"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/delivery_guy_img"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_margin="5dp"
+                android:text="Accept"
+                android:textAllCaps="false" />
+
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/delivery_guy_img"
+                android:layout_margin="5dp"
+                android:layout_toStartOf="@+id/accept_order"
+                android:layout_toLeftOf="@+id/accept_order"
+                android:text="Decline"
+                android:textAllCaps="false" />
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0sp"
+            android:layout_weight="70"
+            android:background="@drawable/accept_radius">
+
+
+
+
+
+
+        </RelativeLayout>
+    </LinearLayout>
+
+
+</RelativeLayout>

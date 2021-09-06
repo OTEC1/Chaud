@@ -9,11 +9,11 @@
     <string name="confirm_password">Confirm Password</string>
     <string name="DEVICE_REG_TOKEN">DEVICE_REG_TOKEN</string>
     <string name="DEVICE_TOKEN">DEVICE_TOKEN</string>
-    <string name="delivery_location">Delivery Location</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="forgot_password">Forgot Password</string>
     <string name="forgot_email">Email</string>
     <string name="DELIVERY_REG">Delivery Registration</string>
     <string name="DELIVERY_LOCATION">Delivery Location</string>
+    <string name="LAST_SIGN_IN_DELIVERY">LAST_SIGN_IN_DELIVERY</string>
+    <string name="VENDOR">VENDOR</string>
+    <string name="delivery_details">Home address</string>
 </resources>

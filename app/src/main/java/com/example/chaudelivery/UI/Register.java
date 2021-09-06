@@ -45,7 +45,7 @@ import static com.example.chaudelivery.utils.Constant.PICK_IMAGE;
 
 public class Register extends AppCompatActivity {
 
-    private EditText name, email, phone, pass, confirm_pass;
+    private EditText name, email, phone, pass, confirm_pass, delivery_details;
     private Button Register, choose_file;
     private ProgressBar progressBar;
     private Uri imgUri;
@@ -66,6 +66,7 @@ public class Register extends AppCompatActivity {
         confirm_pass = (EditText) findViewById(R.id.input_confirm_password);
         choose_file = (Button) findViewById(R.id.photo_selector);
         Register = (Button) findViewById(R.id.btn_register);
+        delivery_details = (EditText) findViewById(R.id.delivery_guy__details);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
 
@@ -74,9 +75,9 @@ public class Register extends AppCompatActivity {
 
         Register.setOnClickListener(i -> {
 
-            if (!new utils().instantiate_shared_preferences(getApplicationContext()).getBoolean(getString(R.string.DEVICE_REG_TOKEN), false))
+            if (!new utils().init(getApplicationContext()).getBoolean(getString(R.string.DEVICE_REG_TOKEN), false))
                 new utils().message("Device not Registered Pls Relaunch or Reinstall App.", getApplicationContext());
-            else if (new utils().verify(name, email, phone, pass, confirm_pass, getApplicationContext()))
+            else if (new utils().verify(name, email, phone, pass, confirm_pass, delivery_details, getApplicationContext()))
                 make_post_on_location(name.getText().toString(), email.getText().toString(), phone.getText().toString(), pass.getText().toString());
 
         });
@@ -129,6 +130,8 @@ public class Register extends AppCompatActivity {
                                     user.setMember_T(" I agree to Terms and Condition");
                                     user.setToken("");
                                     user.setImg_url(p);
+                                    user.setDelivery_details(delivery_details.getText().toString());
+
                                     DocumentReference new_member = FirebaseFirestore.getInstance().collection(getString(R.string.DELIVERY_REG)).document(Objects.requireNonNull(FirebaseAuth.getInstance().getUid()));
                                     new_member.set(user).addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
@@ -220,6 +223,7 @@ public class Register extends AppCompatActivity {
                 if (percentDo == 100) {
                     progressBar.setVisibility(View.INVISIBLE);
                     startActivity(new Intent(getApplicationContext(), Login.class));
+                    FirebaseAuth.getInstance().signOut();
                     Register.setEnabled(true);
                 }
 

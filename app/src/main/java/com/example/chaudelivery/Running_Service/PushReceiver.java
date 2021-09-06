@@ -14,7 +14,9 @@ import android.util.Log;
 import androidx.core.app.NotificationCompat;
 
 import com.example.chaudelivery.R;
+import com.example.chaudelivery.UI.Accept_Order;
 import com.example.chaudelivery.UI.MainActivity;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -34,22 +36,22 @@ public class PushReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        String notificationText = "";
-        if (intent.getStringExtra("user") != null)
-            notificationText = intent.getStringExtra("user");
-
-        int notificationID = new Random().nextInt(2000);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        // Prepare a notification with vibration, sound and lights
+        Intent intent1 = new Intent(context, Accept_Order.class);
+        intent1.putExtra("Vendor",intent.getStringExtra("Vendor"));
+        intent1.putExtra("ID",intent.getStringArrayExtra("ID"));
+        intent1.putExtra("Order_id", intent.getStringExtra("Order_id"));
+        int notificationID = new Random().nextInt(3000);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent1, PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
                 .setAutoCancel(true)
                 .setSmallIcon(R.drawable.notify)
                 .setContentTitle(NOTIFICATION_TITLE)
-                .setContentText(notificationText)
+                .setContentText(intent.getStringExtra("Vendor"))
                 .setLights(Color.RED, 1000, 1000)
                 .setVibrate(new long[]{0, 400, 250, 400})
                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                .setContentIntent(PendingIntent.getActivity(context, 0, new Intent(context, MainActivity.class).putExtra("ID", (intent.getStringExtra("ID") != null) ? intent.getStringExtra("ID") : ""), PendingIntent.FLAG_ONE_SHOT));
+                .setContentIntent(pendingIntent);
 
         if (intent.getStringExtra("img_url") != null) {
             Bitmap bitmap = get_img_url(intent.getStringExtra("img_url"));

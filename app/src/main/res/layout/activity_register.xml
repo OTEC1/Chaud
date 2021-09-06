@@ -14,7 +14,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="20dp"
         android:src="@mipmap/chau_logo" />
 
     <ScrollView
@@ -31,7 +31,7 @@
                 android:id="@+id/relLayout1"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:padding="20dp">
+                android:padding="10dp">
 
                 <TextView
                     android:id="@+id/textEmailReg"
@@ -41,7 +41,7 @@
                     android:layout_marginTop="5dp"
                     android:text="@string/email_registration"
                     android:textColor="@color/Black"
-                    android:textSize="45sp" />
+                    android:textSize="25sp" />
 
 
                 <EditText
@@ -49,7 +49,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:layout_below="@+id/textEmailReg"
-                    android:layout_marginTop="30dp"
+                    android:layout_marginTop="10dp"
                     android:background="@drawable/custom_lines"
                     android:hint="Name"
                     android:inputType="textEmailAddress"
@@ -80,6 +80,7 @@
                     android:layout_marginTop="20dp"
                     android:background="@drawable/custom_lines"
                     android:hint="Phone"
+                    android:drawableRight="@drawable/ic_whatsapp_"
                     android:inputType="phone"
                     android:padding="10dp"
                     android:textColor="@color/Black"
@@ -113,12 +114,26 @@
                     android:textColorHint="@color/Black" />
 
 
+                <EditText
+                    android:id="@+id/delivery_guy__details"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_below="@+id/input_confirm_password"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/custom_lines"
+                    android:hint="@string/delivery_details"
+                    android:inputType="text"
+                    android:padding="10dp"
+                    android:textColor="@color/Black"
+                    android:textColorHint="@color/Black" />
+
+
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/photo_selector"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/input_confirm_password"
+                    android:layout_below="@+id/delivery_guy__details"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="15dp"
                     android:background="@android:color/transparent"
