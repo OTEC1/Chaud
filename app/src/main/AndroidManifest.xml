@@ -27,7 +27,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ChauDelivery">
-        <activity android:name=".UI.Accept_Order"></activity>
+        <activity android:name=".UI.Map_views"></activity>
+        <activity android:name=".UI.Accept_Order" />
         <activity android:name=".UI.Forgot_Pass" />
         <activity android:name=".UI.Login" />
         <activity android:name=".UI.Register" />

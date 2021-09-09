@@ -16,6 +16,7 @@ import androidx.core.app.NotificationCompat;
 import com.example.chaudelivery.R;
 import com.example.chaudelivery.UI.Accept_Order;
 import com.example.chaudelivery.UI.MainActivity;
+import com.example.chaudelivery.utils.Constant;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.io.InputStream;
@@ -39,8 +40,18 @@ public class PushReceiver extends BroadcastReceiver {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         Intent intent1 = new Intent(context, Accept_Order.class);
         intent1.putExtra("Vendor",intent.getStringExtra("Vendor"));
-        intent1.putExtra("ID",intent.getStringArrayExtra("ID"));
+        intent1.putExtra("Vendor_img_url", intent.getStringExtra("Vendor_img_url"));
+        intent1.putExtra("Vendor_ID",intent.getStringExtra("Vendor_ID"));
+        intent1.putExtra("Client_ID",intent.getStringExtra("Client_ID"));
+        intent1.putExtra("Vendor_Phone", intent.getStringExtra("Vendor_Phone"));
         intent1.putExtra("Order_id", intent.getStringExtra("Order_id"));
+        intent1.putExtra("Order_items", intent.getIntExtra("Order_items",0));
+        intent1.putExtra("Vendor_business_D", intent.getStringExtra("Vendor_business_D"));
+        intent1.putExtra("Pick_up_geo_point", intent.getStringExtra("Pick_up_geo_point"));
+        intent1.putExtra("Drop_off_geo_point", intent.getStringExtra("Drop_off_geo_point"));
+        intent1.putExtra("Drop_off_phone_no", intent.getStringExtra("Drop_off_phone_no"));
+        intent1.putExtra("Timestamp", intent.getLongExtra("Timestamp",0));
+        intent1.putExtra("doc_id_Gen", intent.getStringExtra("doc_id_Gen"));
         int notificationID = new Random().nextInt(3000);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent1, PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
@@ -53,10 +64,10 @@ public class PushReceiver extends BroadcastReceiver {
                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                 .setContentIntent(pendingIntent);
 
-        if (intent.getStringExtra("img_url") != null) {
-            Bitmap bitmap = get_img_url(intent.getStringExtra("img_url"));
+        if (intent.getStringExtra("Vendor_img_url") != null) {
+            Bitmap bitmap = get_img_url(intent.getStringExtra("Vendor_img_url"));
             builder.setStyle(new NotificationCompat.BigPictureStyle().bigPicture(bitmap).bigLargeIcon(null)).setLargeIcon(bitmap);
-            Log.d(TAG, intent.getStringExtra("img_url"));
+            Log.d(TAG, intent.getStringExtra("Vendor_img_url"));
         }
 
         Pushy.setNotificationChannel(builder, context);
@@ -70,7 +81,7 @@ public class PushReceiver extends BroadcastReceiver {
 
     private Bitmap get_img_url(String img_url) {
         try {
-            URL url = new URL(img_url);
+            URL url = new URL(IMG_URL+img_url);
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
             connection.setDoInput(true);
             connection.connect();

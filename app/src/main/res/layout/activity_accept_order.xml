@@ -19,75 +19,156 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_margin="10dp"
-            android:layout_weight="30">
-
-
-            <TextView
-                android:id="@+id/delivery_guy_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_marginTop="20dp"
-                android:layout_marginRight="10dp"
-                android:text="Chau Delivery Guy: Obi One"
-                android:textColor="@color/Black" />
+            android:layout_weight="45">
 
 
             <TextView
                 android:id="@+id/Time_placed"
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/delivery_guy_name"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_marginTop="3dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
                 android:layout_marginRight="10dp"
-                android:text="Time: 5  minute Ago"
-                android:textColor="@color/Black" />
+                android:layout_toEndOf="@id/vendor_img"
+                android:layout_toRightOf="@id/vendor_img"
+                android:textColor="@color/Black"
+                app:drawableEndCompat="@drawable/ic_baseline_access_time_24"
+                app:drawableRightCompat="@drawable/ic_baseline_access_time_24" />
+
+
+            <TextView
+                android:id="@+id/client_phone"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/Time_placed"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_toEndOf="@id/vendor_img"
+                android:layout_toRightOf="@id/vendor_img"
+                android:textColor="@color/Black"
+                app:drawableEndCompat="@drawable/ic_whatsapp_2"
+                app:drawableRightCompat="@drawable/ic_whatsapp_2" />
+
+
+            <TextView
+                android:id="@+id/Order_id"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/client_phone"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_toEndOf="@id/vendor_img"
+                android:layout_toRightOf="@id/vendor_img"
+                android:textColor="@color/Black"
+                app:drawableRightCompat="@drawable/ic_baseline_push_pin_24" />
+
+
+            <TextView
+                android:id="@+id/Order_items"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/Order_id"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_toEndOf="@id/vendor_img"
+                android:layout_toRightOf="@id/vendor_img"
+                android:textColor="@color/Black"
+                app:drawableRightCompat="@drawable/ic_baseline_add_24" />
+
+
+            <TextView
+                android:id="@+id/vendor_name"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/vendor_img"
+                android:layout_marginTop="40dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginRight="10dp"
+                android:textColor="@color/Black"
+                app:drawableEndCompat="@drawable/ic_baseline_accept"
+                app:drawableRightCompat="@drawable/ic_baseline_accept" />
+
+
+            <TextView
+                android:id="@+id/Vendor_business_D"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/vendor_name"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginRight="10dp"
+                android:textColor="@color/Black"
+                app:drawableRightCompat="@drawable/ic_baseline_location_on_24" />
+
+
+            <TextView
+                android:id="@+id/vendor_pick_up_phone"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/Vendor_business_D"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginRight="10dp"
+                android:textColor="@color/Black"
+                app:drawableRightCompat="@drawable/ic_whatsapp_2" />
 
 
             <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/delivery_guy_img"
+                android:id="@+id/vendor_img"
                 android:layout_width="96dp"
                 android:layout_height="96dp"
-                android:layout_margin="5dp"
+                android:layout_margin="10dp"
                 android:src="@color/White" />
 
 
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/accept_order"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/delivery_guy_img"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_margin="5dp"
-                android:text="Accept"
-                android:textAllCaps="false" />
+            <ProgressBar
+                android:id="@+id/progressBar8"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_margin="45dp"
+                android:theme="@style/TextAppearance.AppCompat" />
 
 
-            <androidx.appcompat.widget.AppCompatButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/delivery_guy_img"
-                android:layout_margin="5dp"
-                android:layout_toStartOf="@+id/accept_order"
-                android:layout_toLeftOf="@+id/accept_order"
-                android:text="Decline"
-                android:textAllCaps="false" />
         </RelativeLayout>
 
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="0sp"
-            android:layout_weight="70"
+            android:layout_weight="55"
             android:background="@drawable/accept_radius">
 
 
+            <GridLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:columnCount="3"
+                android:rowCount="4">
 
 
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/accept_order"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="20dp"
+                    android:text="Accept"
+                    android:textAllCaps="false" />
+
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/decline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="20dp"
+                    android:text="Decline"
+                    android:textAllCaps="false" />
+
+            </GridLayout>
 
 
         </RelativeLayout>

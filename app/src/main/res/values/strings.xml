@@ -16,4 +16,7 @@
     <string name="LAST_SIGN_IN_DELIVERY">LAST_SIGN_IN_DELIVERY</string>
     <string name="VENDOR">VENDOR</string>
     <string name="delivery_details">Home address</string>
+    <string name="PAID_VENDORS_SECTION">Paid Vendors Brand Section</string>
+    <string name="USER_PAID_VENDORS">User Paid Orders</string>
+    <string name="DISPATCHED_ORDERS">DISPATCHED_ORDERS</string>
 </resources>

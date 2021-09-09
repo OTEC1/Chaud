@@ -26,7 +26,6 @@ public class account extends Fragment {
 
 
     //------------check if sign in   perform business logic-------------------------//
-
     private TextView name, phone, address, email;
     private Button bad, report, available;
     private RatingBar fair_and_good;

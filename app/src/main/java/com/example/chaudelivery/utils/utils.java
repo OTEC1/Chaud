@@ -44,6 +44,8 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -194,12 +196,10 @@ public class utils {
     }
 
 
-
     //Delivery Guy details
     public void CACHE_VENDOR(UserLocation user, Context context, int i, String tag) {
         if (i == 0)
             init(context).edit().putString(tag, null).apply();
-        Log.d("TAGYOIUYTRERT", "CACHE_VENDOR: "+user.getUser().getDelivery_details());
         SharedPreferences.Editor collection = init(context).edit();
         String area = new Gson().toJson(user);
         collection.putString(tag, area);
@@ -209,12 +209,12 @@ public class utils {
     }
 
 
-
     //Get Sign in Vendor.
     @RequiresApi(api = Build.VERSION_CODES.N)
     public UserLocation GET_DELIVERY_CACHED(Context view, String tag) {
         String arrayListString = init(view).getString(tag, null);
-        Type type = new TypeToken<UserLocation>() {}.getType();
+        Type type = new TypeToken<UserLocation>() {
+        }.getType();
         return new Gson().fromJson(arrayListString, type);
 
     }
@@ -232,8 +232,6 @@ public class utils {
             }
         });
     }
-
-
 
 
     //IMG LOAD PROGRESS
@@ -259,4 +257,13 @@ public class utils {
                 .apply(requestOptions).into(poster_value);
     }
 
+    public Map<String, Object> maps(String delivery_uid, int x) {
+        Map<String, Object> p = new HashMap<>();
+        if (x == 0)
+            p.put("Delivery", delivery_uid);
+        if (x == 1)
+            p.put("DStatus", true);
+
+        return p;
+    }
 }

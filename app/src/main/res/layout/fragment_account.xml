@@ -22,7 +22,7 @@
                 android:id="@+id/sign_in_vendor_img"
                 android:layout_width="96dp"
                 android:layout_height="96dp"
-                android:layout_margin="10dp"
+                android:layout_margin="15dp"
                 android:layout_marginLeft="10dp"
                 android:layout_marginTop="10dp" />
 
@@ -47,58 +47,54 @@
 
             <TextView
                 android:id="@+id/Name"
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
                 android:layout_marginStart="5dp"
                 android:layout_marginLeft="5dp"
                 android:layout_marginTop="15dp"
                 android:layout_marginEnd="10dp"
                 android:layout_marginRight="10dp"
+                android:layout_toRightOf="@id/sign_in_vendor_img"
                 android:text="Name: John Chukuwdi" />
 
 
             <TextView
                 android:id="@+id/phone"
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/Name"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
                 android:layout_marginStart="5dp"
                 android:layout_marginLeft="5dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="10dp"
                 android:layout_marginRight="10dp"
+                android:layout_toRightOf="@id/sign_in_vendor_img"
                 android:text="090876545678" />
 
             <TextView
                 android:id="@+id/address"
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/phone"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
                 android:layout_marginStart="5dp"
                 android:layout_marginLeft="5dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="10dp"
                 android:layout_marginRight="10dp"
+                android:layout_toRightOf="@id/sign_in_vendor_img"
                 android:text="12 brwon raod" />
 
             <TextView
                 android:id="@+id/email"
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/address"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
                 android:layout_marginStart="5dp"
                 android:layout_marginLeft="5dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="10dp"
                 android:layout_marginRight="10dp"
+                android:layout_toRightOf="@id/sign_in_vendor_img"
                 android:text="Rating@gmail.com" />
 
 
@@ -110,7 +106,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_margin="10dp"
                 android:background="@android:color/transparent"
-                android:text="Bad review count: 24"
+                android:text="Bad review count:"
                 android:textAllCaps="false"
                 android:textColor="#F44336" />
 
