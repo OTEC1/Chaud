@@ -202,6 +202,19 @@
                     android:textColor="@color/Black"
                     android:textSize="16sp" />
 
+
+                <TextView
+                    android:id="@+id/issues"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="2dp"
+                    android:layout_below="@id/link_register"
+                    android:padding="20sp"
+                    android:text="Having issues Signing or registering ?"
+                    android:textColor="@color/Black"
+                    android:textSize="16sp" />
+
             </RelativeLayout>
 
 
