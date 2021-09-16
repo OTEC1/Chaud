@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/chau_vendor"
+    tools:context=".UI.Issues_submit">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:orientation="vertical"
+        android:weightSum="100">
+
+
+        <EditText
+            android:id="@+id/issues_report_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:background="@drawable/text_background"
+            android:hint="Email"
+            android:padding="10dp" />
+
+        <EditText
+            android:id="@+id/issues_describe"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginRight="15dp"
+            android:background="@drawable/text_background"
+            android:ems="10"
+            android:gravity="start|top"
+            android:hint="Pls describe issue"
+            android:inputType="textMultiLine"
+            android:padding="10dp" />
+
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/submit_issues"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_margin="15dp"
+            android:background="@drawable/button_lines"
+            android:padding="5dp"
+            android:text="Submit"
+            android:textAllCaps="false"
+            android:textColor="@color/White" />
+    </LinearLayout>
+
+</RelativeLayout>

@@ -31,7 +31,7 @@ import static com.example.chaudelivery.utils.Constant.Time_lapsed;
 public class Login extends AppCompatActivity {
 
     private Button login, foget_pass;
-    private TextView register;
+    private TextView register,issues;
     private EditText email, pass;
     private ProgressBar progressBar;
 
@@ -47,6 +47,7 @@ public class Login extends AppCompatActivity {
         login = (Button) findViewById(R.id.email_sign_in_button);
         register = (TextView) findViewById(R.id.link_register);
         foget_pass = (Button) findViewById(R.id.forgot_pass);
+        issues = (TextView) findViewById(R.id.issues);
         email = (EditText) findViewById(R.id.email);
         pass = (EditText) findViewById(R.id.password);
         progressBar = (ProgressBar) findViewById(R.id.progressBar2);
@@ -80,6 +81,10 @@ public class Login extends AppCompatActivity {
 
         foget_pass.setOnClickListener(a -> {
             startActivity(new Intent(getApplicationContext(), Forgot_Pass.class));
+        });
+
+        issues.setOnClickListener(k->{
+            startActivity(new Intent(getApplicationContext(), Issues_submit.class));
         });
     }
 
