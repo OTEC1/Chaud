@@ -6,23 +6,26 @@
     tools:context=".UI.notification">
 
 
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"/>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:weightSum="100">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="Notification" />
 
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/main_recycle_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"/>
 
-        </androidx.recyclerview.widget.RecyclerView>
+
     </LinearLayout>
 
 </FrameLayout>

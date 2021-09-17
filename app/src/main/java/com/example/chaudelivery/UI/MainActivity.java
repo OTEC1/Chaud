@@ -26,7 +26,7 @@ import com.example.chaudelivery.R;
 import com.example.chaudelivery.Running_Service.Keep_alive;
 import com.example.chaudelivery.Running_Service.PushReceiver;
 import com.example.chaudelivery.Running_Service.RegisterUser;
-import com.example.chaudelivery.utils.User;
+import com.example.chaudelivery.model.User;
 import com.example.chaudelivery.utils.UserLocation;
 import com.example.chaudelivery.utils.utils;
 import com.google.android.gms.common.ConnectionResult;
@@ -35,7 +35,6 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -336,7 +335,7 @@ public class MainActivity extends AppCompatActivity {
         FirebaseFirestore.getInstance().collection(getString(R.string.DELIVERY_LOCATION)).document(FirebaseAuth.getInstance().getUid())
                 .set(muserLocation).addOnCompleteListener(o -> {
             if (o.isSuccessful())
-                System.out.println();
+                Log.d(TAG, "saveUserLocation: GOOD");
             else
                 new utils().message2("Error Occurred on data insert: " + o.getException(), this);
 

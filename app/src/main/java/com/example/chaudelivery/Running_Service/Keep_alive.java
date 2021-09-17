@@ -91,7 +91,6 @@ public class Keep_alive extends Service {
             @Override
             public void run() {
                 count++;
-                Log.d(TAG, String.valueOf(count));
             }
         };
         timer.schedule(timerTask,1000,1000);

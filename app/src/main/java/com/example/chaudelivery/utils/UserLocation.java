@@ -3,6 +3,7 @@ package com.example.chaudelivery.utils;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.example.chaudelivery.model.User;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.ServerTimestamp;
 

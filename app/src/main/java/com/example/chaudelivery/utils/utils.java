@@ -235,12 +235,12 @@ public class utils {
 
 
     //IMG LOAD PROGRESS
-    public void IMG(CircleImageView poster_value, String model, ProgressBar progressBar) {
+    public void IMG(CircleImageView poster_value, String url, ProgressBar progressBar) {
         RequestOptions requestOptions = new RequestOptions()
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .skipMemoryCache(true);
 
-        Glide.with(poster_value.getContext()).load(model)
+        Glide.with(poster_value.getContext()).load(url)
                 .listener(new RequestListener<Drawable>() {
                     @Override
                     public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {

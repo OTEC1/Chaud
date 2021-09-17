@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/order_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        app:cardCornerRadius="10dp">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp">
+
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/vendor_img"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:layout_margin="10dp"
+                app:civ_border_color="#FFF"
+                app:civ_border_width="3dp" />
+
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_margin="35dp" />
+
+
+            <TextView
+                android:id="@+id/drop_off_phone"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginEnd="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_toRightOf="@id/vendor_img"
+                app:drawableLeftCompat="@drawable/ic_whatsapp_2"
+                app:drawableStartCompat="@drawable/ic_whatsapp_2" />
+
+            <TextView
+                android:id="@+id/order_item_id"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/drop_off_phone"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="7dp"
+                android:layout_marginRight="10dp"
+                android:layout_toRightOf="@id/vendor_img"
+                android:drawableStart="@drawable/ic_baseline_push_pin_4"
+                android:drawableLeft="@drawable/ic_baseline_push_pin_4" />
+
+
+            <TextView
+                android:id="@+id/time_stamp"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/order_item_id"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="7dp"
+                android:layout_marginRight="10dp"
+                android:layout_toRightOf="@id/vendor_img"
+                android:drawableStart="@drawable/ic_baseline_access_time_4"
+                android:drawableLeft="@drawable/ic_baseline_access_time_4" />
+
+
+            <TextView
+                android:id="@+id/vendor_name"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/time_stamp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="7dp"
+                android:layout_marginRight="10dp"
+                android:layout_toRightOf="@id/vendor_img"
+                android:drawableStart="@drawable/ic_baseline_accept_user"
+                android:drawableLeft="@drawable/ic_baseline_accept_user" />
+
+
+            <TextView
+                android:id="@+id/Vendor_business_D"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/vendor_name"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="7dp"
+                android:layout_marginRight="10dp"
+                android:layout_toEndOf="@id/vendor_img"
+                android:layout_toRightOf="@id/vendor_img"
+                android:drawableStart="@drawable/ic_baseline_location_on_4"
+                android:drawableLeft="@drawable/ic_baseline_location_on_4" />
+
+
+            <TextView
+                android:id="@+id/vendor_phone"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/Vendor_business_D"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="7dp"
+                android:layout_marginRight="10dp"
+                android:layout_toEndOf="@id/vendor_img"
+                android:layout_toRightOf="@id/vendor_img"
+                app:drawableLeftCompat="@drawable/ic_whatsapp_2"
+                app:drawableStartCompat="@drawable/ic_whatsapp_2" />
+
+
+            <TextView
+                android:id="@+id/order_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="10dp"
+                android:visibility="invisible" />
+
+
+            <TextView
+                android:id="@+id/vendor_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="10dp"
+                android:visibility="invisible" />
+
+
+        </RelativeLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</RelativeLayout>

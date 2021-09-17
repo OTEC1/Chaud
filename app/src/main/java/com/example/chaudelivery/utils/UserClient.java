@@ -3,6 +3,8 @@ package com.example.chaudelivery.utils;
 import android.app.Application;
 import android.content.Context;
 
+import com.example.chaudelivery.model.User;
+
 
 public class UserClient extends Application {
 
