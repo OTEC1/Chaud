@@ -55,7 +55,7 @@ import static com.example.chaudelivery.utils.Constant.READ_STORAGE_PERMISSION_RE
 import static com.example.chaudelivery.utils.Constant.Time_lapsed;
 import static com.example.chaudelivery.utils.Constant.UPDATE_INTERVAL;
 
-public class MainActivity extends AppCompatActivity {
+public class  MainActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNavigationView;
     private DocumentReference documentReference;
@@ -302,6 +302,8 @@ public class MainActivity extends AppCompatActivity {
     //Step 3
     private void getLast_know_Location(Task<DocumentSnapshot> task) {
         Log.d(TAG, " requesting for last known location");
+
+
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
             return;
 
@@ -328,6 +330,9 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         LocationServices.getFusedLocationProviderClient(getApplicationContext()).requestLocationUpdates(mLocationRequest, mLocationCallback, null);
+
+
+
     }
 
     private void saveUserLocation(UserLocation muserLocation) {

@@ -18,6 +18,6 @@
     <string name="delivery_details">Home address</string>
     <string name="PAID_VENDORS_SECTION">Paid Vendors Brand Section</string>
     <string name="USER_PAID_VENDORS">User Paid Orders</string>
-    <string name="DISPATCHED_ORDERS">DISPATCHED_ORDERS</string>
+    <string name="DISPATCHED_ORDERS">Dispatched Orders</string>
     <string name="having_issues_with_login_or_registration">Having issues with login or registration ?</string>
 </resources>

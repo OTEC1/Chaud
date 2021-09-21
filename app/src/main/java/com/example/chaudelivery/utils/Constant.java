@@ -8,15 +8,10 @@ public class Constant {
     public static final int READ_STORAGE_PERMISSION_REQUEST_CODE = 5002;
     public static int Time_lapsed = 2000;
     public final static long UPDATE_INTERVAL = 5 * 1000;
-    public final static long FAST_INTERVAL = 3000;
-    public final static long GPS_INTERVAL = 3000;
     public final static long GPRS_INTERVAL = 3000;
     public  final  static  int PICK_IMAGE = 9002;
-    public  static  String FIRST_ITEM_ON_LIST;
-    public static  String VENDOR_TOKEN;
-    public static  String vendor_uid;
-    public static  String banner;
-    public static  String vendor_name;
+    public static double latitude=0;
+    public static double longtitude=0;
 
 
 

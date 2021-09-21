@@ -47,22 +47,25 @@ public class notification extends Fragment {
         View view = inflater.inflate(R.layout.fragment_notification, container, false);
         recyclerView = view.findViewById(R.id.main_recycle_view);
         progressBar = view.findViewById(R.id.progressBar);
-        api_call1();
+        if (FirebaseAuth.getInstance().getUid() != null)
+            api_call1();
         return view;
     }
 
     private void api_call1() {
 
-        FirebaseFirestore.getInstance().collection(getString(R.string.DISPATCHED_ORDERS)).document(FirebaseAuth.getInstance().getUid()).collection("orders").orderBy("TimeStamp", Query.Direction.DESCENDING)
+        FirebaseFirestore.getInstance().collection(getString(R.string.DISPATCHED_ORDERS)).document(FirebaseAuth.getInstance().getUid()).collection("orders").orderBy("Timestamp", Query.Direction.DESCENDING)
                 .addSnapshotListener((value, error) -> {
                     os = new ArrayList<>();
-                    assert value != null;
-                    List<DocumentSnapshot> obj = value.getDocuments();
-                    for (DocumentSnapshot d : obj) {
-                        Map<String, Object> g = d.getData();
-                        //Call client ID geo point & vendor id geo_point b4 list population
-                        os.add(g);
-                        setLayout(os);
+                    if (FirebaseAuth.getInstance().getUid() != null) {
+                        assert value != null;
+                        List<DocumentSnapshot> obj = value.getDocuments();
+                        for (DocumentSnapshot d : obj) {
+                            Map<String, Object> g = d.getData();
+                            //Call client ID geo point & vendor id geo_point b4 list population
+                            os.add(g);
+                            setLayout(os);
+                        }
                     }
                 });
     }
