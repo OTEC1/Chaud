@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -23,6 +24,7 @@
                 android:layout_width="96dp"
                 android:layout_height="96dp"
                 android:layout_margin="15dp"
+                android:layout_marginStart="10dp"
                 android:layout_marginLeft="10dp"
                 android:layout_marginTop="10dp" />
 
@@ -110,15 +112,7 @@
                 android:textAllCaps="false"
                 android:textColor="#F44336" />
 
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/available"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_margin="10dp"
-                android:layout_toRightOf="@id/report"
-                android:text="Available"
-                android:textAllCaps="false" />
+
 
 
             <androidx.appcompat.widget.AppCompatButton
@@ -128,12 +122,15 @@
                 android:layout_alignParentBottom="true"
                 android:layout_margin="10dp"
                 android:text="Report"
+                android:backgroundTint="@color/colorPrimary"
+                android:textColor="@color/White"
                 android:textAllCaps="false" />
 
         </RelativeLayout>
 
 
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/completed_orders"
             android:layout_width="match_parent"
             android:layout_height="0sp"
             android:layout_gravity="bottom"

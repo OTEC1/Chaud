@@ -14,7 +14,6 @@ import cz.msebera.android.httpclient.util.EntityUtils;
 import me.pushy.sdk.lib.jackson.databind.ObjectMapper;
 
 import static com.example.chaudelivery.utils.Constant.REQUEST_KEY;
-import static com.example.chaudelivery.utils.Constant.*;
 
 public class Pusher {
 

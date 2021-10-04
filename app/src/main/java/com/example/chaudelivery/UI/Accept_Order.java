@@ -1,10 +1,14 @@
 package com.example.chaudelivery.UI;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -14,7 +18,6 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.chaudelivery.R;
 import com.example.chaudelivery.model.User;
@@ -25,22 +28,18 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.gson.Gson;
 
-import java.lang.reflect.MalformedParameterizedTypeException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -55,11 +54,16 @@ public class Accept_Order extends AppCompatActivity {
     private Button accept, decline;
     private CircleImageView circleImageView;
     private ProgressBar progressBar;
-    private List<UserLocation> muserlocations;
-    private List points;
+    private ProgressDialog progressDialog;
+    
+    
+    private User user;
+    private List<UserLocation> points;
+    private double  latitudes, longtitudes;
+    
 
 
-    private String TAG = "AcceptOrder";
+    private final String TAG = "AcceptOrder";
     private boolean start_service = true;
 
 
@@ -67,35 +71,39 @@ public class Accept_Order extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         start_service = false;
-        Log.d(TAG, "onDestroy: ");
     }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_accept_order);
-        muser_time_place = (TextView) findViewById(R.id.Time_placed);
-        muser_phone = (TextView) findViewById(R.id.client_phone);
-        muser_order_id = (TextView) findViewById(R.id.Order_id);
-        muser_item_size = (TextView) findViewById(R.id.Order_items);
-        mvendor_name = (TextView) findViewById(R.id.vendor_name);
-        mvendor_business_details = (TextView) findViewById(R.id.Vendor_business_D);
-        mvendor_phone = (TextView) findViewById(R.id.vendor_pick_up_phone);
-        circleImageView = (CircleImageView) findViewById(R.id.vendor_img);
-        progressBar = (ProgressBar) findViewById(R.id.progressBar8);
-        accept = (Button) findViewById(R.id.accept_order);
-        decline = (Button) findViewById(R.id.decline);
+        muser_time_place = findViewById(R.id.Time_placed);
+        muser_phone = findViewById(R.id.client_phone);
+        muser_order_id = findViewById(R.id.Order_id);
+        muser_item_size = findViewById(R.id.Order_items);
+        mvendor_name = findViewById(R.id.vendor_name);
+        mvendor_business_details = findViewById(R.id.Vendor_business_D);
+        mvendor_phone = findViewById(R.id.vendor_pick_up_phone);
+        circleImageView = findViewById(R.id.vendor_img);
+        progressBar = findViewById(R.id.progressBar8);
+        accept = findViewById(R.id.accept_order);
+        decline = findViewById(R.id.decline);
         points = new ArrayList<>();
         getLast_know_Location();
         CHECK_SIGNED_IN_DELIVERY();
 
+        user = call(getApplicationContext());
 
         accept.setOnClickListener(j -> {
 
             if (FirebaseAuth.getInstance().getUid() != null) {
+                progressD().show();
                 ACCEPT_LOGIC();
-            } else
+            } else {
                 new utils().message2("Pls sign in", this);
+                progressDialog.dismiss();
+            }
         });
 
 
@@ -109,6 +117,10 @@ public class Accept_Order extends AppCompatActivity {
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public User call(Context applicationContext) {
+     return    new utils().GET_DELIVERY_CACHED(applicationContext, applicationContext.getString(R.string.DELIVERY)); }
+
 
     private void CHECK_SIGNED_IN_DELIVERY() {
         if (FirebaseAuth.getInstance().getUid() != null)
@@ -118,6 +130,7 @@ public class Accept_Order extends AppCompatActivity {
     }
 
 
+    @SuppressLint("SetTextI18n")
     private void POPULATE_WIDGET() {
         muser_time_place.setText("Time: " + getIntent().getLongExtra("Timestamp", 0) + " minute Ago");
         muser_phone.setText("Phone: " + getIntent().getStringExtra("Drop_off_phone_no") + "  ");
@@ -144,12 +157,15 @@ public class Accept_Order extends AppCompatActivity {
                         if (!n.getBoolean("DStatus"))
                             ADD_DELIVERY_TO_ORDER();
                         else {
-                            new utils().message("Order already taken", this);
+                            new utils().message("Order  already taken", this);
                             startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                            progressDialog.dismiss();
                         }
                 }
-            } else
-                new utils().message2("Error Occurred", this);
+            } else {
+                progressDialog.dismiss();
+                new utils().message2("Error Occurred" + h.getException(), this);
+            }
         });
     }
 
@@ -159,15 +175,21 @@ public class Accept_Order extends AppCompatActivity {
         FirebaseFirestore.getInstance().collection(getString(R.string.PAID_VENDORS_SECTION)).document("Orders").collection(getIntent().getStringExtra("Client_ID")).document("1A").collection("A1").document(getIntent().getStringExtra("Order_id")).get().addOnCompleteListener(h -> {
             if (h.isSuccessful()) {
                 DocumentSnapshot maps = h.getResult();
-                Log.d(TAG, "ADD_DELIVERY_TO_ORDER: " + maps.get("Delivery"));
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-                    if (Objects.equals(maps.get("Delivery"), "0000")) {
+                    if (maps.get("Delivery").toString().equals("0000")) {
                         UPDATE_COLUMN(FirebaseAuth.getInstance().getUid());
                         Log.d(TAG, "Step 1");
-                    } else
-                        new utils().message2("Error Occurred", this);
+                    } else {
+                        progressDialog.dismiss();
+                        new utils().message("Request failed  Order already taken", this);
+                        startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                    }
 
+            } else {
+                new utils().message2("Error Occurred " + h.getException(), this);
+                progressDialog.dismiss();
             }
+
         });
     }
 
@@ -179,8 +201,10 @@ public class Accept_Order extends AppCompatActivity {
             if (o.isSuccessful()) {
                 SECOND_UPDATE(delivery_uid);
                 Log.d(TAG, "Step 2");
-            } else
+            } else {
                 Log.d(TAG, "Error occurred while UPDATING_COLUMN: ");
+                progressDialog.dismiss();
+            }
         });
     }
 
@@ -191,58 +215,76 @@ public class Accept_Order extends AppCompatActivity {
             if (o.isSuccessful()) {
                 CREATE_DELIVERY_ORDERS_TABLE();
                 Log.d(TAG, "Step 3");
-            } else
+            } else {
                 Log.d(TAG, "Error occurred while UPDATING_COLUMN: ");
+                progressDialog.dismiss();
+            }
         });
     }
 
 
     private void CREATE_DELIVERY_ORDERS_TABLE() {
         if (latitude != 0 && longtitude != 0) {
-            muserlocations = new ArrayList<>();
-            points.add(LOOP_GEO(getIntent().getStringExtra("Pick_up_geo_point")));
-            points.add(LOOP_GEO(getIntent().getStringExtra("Drop_off_geo_point")));
-            points.add(new GeoPoint(latitude, longtitude));
-
-
+            points.add(LOOP_GEO(getIntent().getExtras().getString("Pick_up_geo_point"), "Pick up", getIntent().getStringExtra("user_img_url"), getIntent().getStringExtra("Client_name")));
+            points.add(LOOP_GEO(getIntent().getStringExtra("Drop_off_geo_point"), "Drop off", getIntent().getStringExtra("Vendor_img_url"), getIntent().getStringExtra("Vendor")));
+            points.add(LOOP_GEO("Delivery", "Delivery location", user.getImg_url(), user.getName()));
             DocumentReference documentReference = FirebaseFirestore.getInstance().collection(getString(R.string.DISPATCHED_ORDERS)).document(FirebaseAuth.getInstance().getUid()).collection("orders").document();
             documentReference.set(map(documentReference.getId())).addOnCompleteListener(u -> {
-                if (u.isSuccessful()) {
-                    Log.d(TAG, "CREATE_DELIVERY_ORDERS_TABLE: ");
-                    startActivity(new Intent(getApplicationContext(), Map_views.class).putExtra("GEO_POINTS", new Gson().toJson(points.toString())));
-                } else
-                    Log.d(TAG, "CREATE_DELIVERY_EXCEPTION: " + u.getException());
+                if (u.isSuccessful())
+                    if (points.size() == 3)
+                        startActivity(new Intent(getApplicationContext(), Map_views.class).putExtra("GEO_POINTS", new Gson().toJson(points)));
+                    else {
+                        Log.d(TAG, "CREATE_DELIVERY_EXCEPTION: " + u.getException());
+                        progressDialog.dismiss();
+                    }
 
             });
         } else
             Log.d(TAG, "Geo point is null ");
     }
 
+
     private Map<String, Object> map(String id) {
 
         Map<String, Object> map = new HashMap<>();
-        map.put("Vendor", getIntent().getStringExtra("Vendor"));
-        map.put("Vendor_img_url", getIntent().getStringExtra("Vendor_img_url"));
-        map.put("Vendor_ID", getIntent().getStringExtra("Vendor_ID"));
         map.put("Client_ID", getIntent().getStringExtra("Client_ID"));
-        map.put("Vendor_Phone", getIntent().getStringExtra("Vendor_Phone"));
-        map.put("Order_id", getIntent().getStringExtra("Order_id"));
-        map.put("Order_items", getIntent().getIntExtra("Order_items", 0));
-        map.put("Vendor_business_D", getIntent().getStringExtra("Vendor_business_D"));
-        map.put("Drop_off_phone_no", getIntent().getStringExtra("Drop_off_phone_no"));
-        map.put("Timestamp", getIntent().getLongExtra("Timestamp", 0));
+        map.put("Client_name", getIntent().getStringExtra("Client_name"));
         map.put("doc_id_Gen", getIntent().getStringExtra("doc_id_Gen"));
         map.put("doc_created_id", id);
+        map.put("Order_id", getIntent().getStringExtra("Order_id"));
+        map.put("Order_items", getIntent().getIntExtra("Order_items", 0));
+        map.put("user_img_url", getIntent().getStringExtra("user_img_url"));
+        map.put("Drop_off_phone_no", getIntent().getStringExtra("Drop_off_phone_no"));
+        map.put("Pick_up_geo_point", Geo(getIntent().getExtras().getString("Pick_up_geo_point")));
+        map.put("Timestamp", getIntent().getLongExtra("Timestamp", 0));
+        map.put("Drop_off_geo_point", Geo(getIntent().getStringExtra("Drop_off_geo_point")));
+        map.put("Vendor_ID", getIntent().getStringExtra("Vendor_ID"));
+        map.put("Vendor_Phone", getIntent().getStringExtra("Vendor_Phone"));
+        map.put("Vendor", getIntent().getStringExtra("Vendor"));
+        map.put("Vendor_img_url", getIntent().getStringExtra("Vendor_img_url"));
+        map.put("Vendor_business_D", getIntent().getStringExtra("Vendor_business_D"));
         return map;
     }
 
 
-    private GeoPoint LOOP_GEO(String drop_off) {
-        double latitude = Double.parseDouble(drop_off.substring(drop_off.indexOf(":") + 1, drop_off.indexOf(",")));
-        double longtitude = Double.parseDouble(drop_off.substring(drop_off.lastIndexOf(":") + 1, drop_off.indexOf("}")));
-        return new GeoPoint(latitude, longtitude);
+    public UserLocation LOOP_GEO(String drop_off, String decor, String img_url, String name) {
+
+        if (!drop_off.equals("Delivery")) {
+            latitudes = Double.parseDouble(drop_off.substring(drop_off.indexOf(":") + 1, drop_off.indexOf(",")));
+            longtitudes = Double.parseDouble(drop_off.substring(drop_off.lastIndexOf(":") + 1, drop_off.indexOf("}")));
+        } else {
+            latitudes = latitude;
+            longtitudes = longtitude;
+        }
+        return new UserLocation(new GeoPoint(latitudes, longtitudes), null, new utils().SERVE(decor, img_url, name));
     }
 
+
+    private GeoPoint Geo(String drop_off) {
+        latitudes = Double.parseDouble(drop_off.substring(drop_off.indexOf(":") + 1, drop_off.indexOf(",")));
+        longtitudes = Double.parseDouble(drop_off.substring(drop_off.lastIndexOf(":") + 1, drop_off.indexOf("}")));
+        return new GeoPoint(latitudes, longtitudes);
+    }
 
     private void getLast_know_Location() {
         Log.d(TAG, " requesting for last known location");
@@ -272,6 +314,15 @@ public class Accept_Order extends AppCompatActivity {
             };
             LocationServices.getFusedLocationProviderClient(getApplicationContext()).requestLocationUpdates(mLocationRequest, mLocationCallback, null);
         }
+    }
+
+
+    public ProgressDialog progressD() {
+        progressDialog = new ProgressDialog(Accept_Order.this);
+        progressDialog.show();
+        progressDialog.setContentView(R.layout.custom_progress);
+        progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        return progressDialog;
     }
 
 

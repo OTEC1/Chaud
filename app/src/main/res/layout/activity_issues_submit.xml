@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
             android:background="@drawable/text_background"
-            android:hint="Email"
+            android:hint="Registration email"
             android:padding="10dp" />
 
         <EditText

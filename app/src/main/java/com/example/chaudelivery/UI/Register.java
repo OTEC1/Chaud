@@ -28,9 +28,6 @@ import com.example.chaudelivery.R;
 import com.example.chaudelivery.utils.Find;
 import com.example.chaudelivery.model.User;
 import com.example.chaudelivery.utils.utils;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -47,6 +44,7 @@ public class Register extends AppCompatActivity {
     private Button Register, choose_file;
     private ProgressBar progressBar;
     private Uri imgUri;
+    private FirebaseFirestore fire;
 
 
     private boolean confirm_img_pick = false, call_started = false;
@@ -57,6 +55,7 @@ public class Register extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
+        fire = FirebaseFirestore.getInstance();
         name = (EditText) findViewById(R.id.name);
         email = (EditText) findViewById(R.id.input_email);
         phone = (EditText) findViewById(R.id.Phone);
@@ -113,49 +112,39 @@ public class Register extends AppCompatActivity {
             if (getFile_extension(imgUri).equals("png") | getFile_extension(imgUri).equals("jpg") | getFile_extension(imgUri).equals("jpeg") | getFile_extension(imgUri).equals("webp")) {
                 progressBar.setVisibility(View.VISIBLE);
                 call_started = true;
-                FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, pass)
-                        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
+                FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, pass).addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        User user = new User();
+                        user.setName(name);
+                        user.setEmail(email);
+                        user.setUsername(email.substring(0, email.indexOf("@")));
+                        user.setPhone(phone);
+                        user.setUser_id(FirebaseAuth.getInstance().getUid());
+                        user.setMember_T(" I agree to Terms and Condition");
+                        user.setToken("");
+                        user.setImg_url(p);
+                        user.setDelivery_details(delivery_details.getText().toString());
 
-                                if (task.isSuccessful()) {
-                                    User user = new User();
-                                    user.setName(name);
-                                    user.setEmail(email);
-                                    user.setUsername(email.substring(0, email.indexOf("@")));
-                                    user.setPhone(phone);
-                                    user.setUser_id(FirebaseAuth.getInstance().getUid());
-                                    user.setMember_T(" I agree to Terms and Condition");
-                                    user.setToken("");
-                                    user.setImg_url(p);
-                                    user.setDelivery_details(delivery_details.getText().toString());
+                        DocumentReference new_member = fire.collection(getString(R.string.DELIVERY_REG)).document(Objects.requireNonNull(FirebaseAuth.getInstance().getUid()));
+                        new_member.set(user).addOnCompleteListener(task1 -> {
 
-                                    DocumentReference new_member = FirebaseFirestore.getInstance().collection(getString(R.string.DELIVERY_REG)).document(Objects.requireNonNull(FirebaseAuth.getInstance().getUid()));
-                                    new_member.set(user).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-
-                                            if (!task.isSuccessful()) {
-                                                if (Objects.requireNonNull(task.getException()).toString().contains("The email address is already in use by another account.")) {
-                                                    new utils().message("Bad Request" + task.getException(), getApplicationContext());
-                                                    progressBar.setVisibility(View.INVISIBLE);
-                                                }
-                                            } else if (task.isSuccessful()) {
-                                                new utils().message("Registered User ", getApplicationContext());
-                                                credentials(p);
-                                            } else {
-                                                new utils().message("Something went wrong.", getApplicationContext());
-                                                progressBar.setVisibility(View.INVISIBLE);
-                                            }
-                                        }
-                                    });
-
-                                } else {
-                                    new utils().message("Error " + task.getException(), getApplicationContext());
-                                    progressBar.setVisibility(View.INVISIBLE);
-                                }
+                            if (!task1.isSuccessful()) {
+                                new utils().message("Error on Request" + task1.getException(), getApplicationContext());
+                                progressBar.setVisibility(View.INVISIBLE);
+                            } else if (task1.isSuccessful()) {
+                                new utils().message("Registered User", getApplicationContext());
+                                credentials(p);
+                            } else {
+                                new utils().message("Something went wrong.", getApplicationContext());
+                                progressBar.setVisibility(View.INVISIBLE);
                             }
                         });
+
+                    } else {
+                        new utils().message("Error " + task.getException(), getApplicationContext());
+                        progressBar.setVisibility(View.INVISIBLE);
+                    }
+                });
             } else
                 new utils().message("Pls select an image file", getApplicationContext());
         } else
@@ -221,6 +210,7 @@ public class Register extends AppCompatActivity {
                 if (percentDo == 100) {
                     progressBar.setVisibility(View.INVISIBLE);
                     startActivity(new Intent(getApplicationContext(), Login.class));
+                    new utils().init(getApplicationContext()).edit().putString(getString(R.string.DELIVERY), null).apply();
                     FirebaseAuth.getInstance().signOut();
                     Register.setEnabled(true);
                 }

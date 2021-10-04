@@ -28,8 +28,11 @@ public class Issues_submit extends AppCompatActivity {
         issues_describe = (EditText) findViewById(R.id.issues_describe);
         submit_issues = (Button) findViewById(R.id.submit_issues);
 
-        if (FirebaseAuth.getInstance().getUid() != null)
+        if (FirebaseAuth.getInstance().getUid() != null) {
             issues_reporter_email.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
+            issues_describe.requestFocus();
+        }
+
 
         submit_issues.setOnClickListener(g -> {
             if (!issues_reporter_email.getText().toString().trim().isEmpty() && !issues_describe.getText().toString().trim().isEmpty())

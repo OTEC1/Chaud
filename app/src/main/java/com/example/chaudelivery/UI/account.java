@@ -1,23 +1,29 @@
 package com.example.chaudelivery.UI;
 
+import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.example.chaudelivery.R;
+import com.example.chaudelivery.model.User;
 import com.example.chaudelivery.utils.Constant;
-import com.example.chaudelivery.utils.UserLocation;
 import com.example.chaudelivery.utils.utils;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -27,7 +33,7 @@ public class account extends Fragment {
 
     //------------check if sign in   perform business logic-------------------------//
     private TextView name, phone, address, email;
-    private Button bad, report, available;
+    private Button bad, report;
     private RatingBar fair_and_good;
     private CircleImageView circleImageView;
     private ProgressBar progressBar;
@@ -44,7 +50,6 @@ public class account extends Fragment {
         fair_and_good = (RatingBar) view.findViewById(R.id.fair_and_good);
         bad = (Button) view.findViewById(R.id.bad_review_count);
         report = (Button) view.findViewById(R.id.report);
-        available = (Button) view.findViewById(R.id.available);
         progressBar = (ProgressBar) view.findViewById(R.id.progressBar8);
 
 
@@ -53,20 +58,40 @@ public class account extends Fragment {
         else
             new utils().message2("Pls Sign in", requireActivity());
 
+
+        report.setOnClickListener(s -> {
+            startActivity(new Intent(getContext(), Issues_submit.class));
+        });
         return view;
     }
 
+    @SuppressLint("SetTextI18n")
     private void LOAD_IN_DELIVERY_DETAILS() {
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            UserLocation user = new utils().GET_DELIVERY_CACHED(getContext(), getString(R.string.VENDOR));
-            name.setText("Name: "+user.getUser().getName());
-            phone.setText("Phone: "+user.getUser().getPhone());
-            address.setText("Address: "+user.getUser().getDelivery_details());
-            email.setText("Email: "+user.getUser().getEmail());
-            bad.setText("Bad review count: "+(user.getUser().getBad()));
-            new utils().IMG(circleImageView, Constant.IMG_URL.concat(user.getUser().getImg_url()), progressBar);
+            User user = new utils().GET_DELIVERY_CACHED(getContext(), getString(R.string.DELIVERY));
+            name.setText("Name: " + user.getName());
+            phone.setText("Phone: " + user.getPhone());
+            address.setText("Address: " + user.getDelivery_details());
+            email.setText("Email: " + user.getEmail());
+            BAD_COUNT(user);
+            new utils().IMG(circleImageView, Constant.IMG_URL.concat(user.getImg_url()), progressBar);
         }
 
     }
+
+    private void BAD_COUNT(User user) {
+        FirebaseFirestore.getInstance().collection(getString(R.string.DELIVERY_REG)).document(user.getUser_id())
+                .addSnapshotListener((value, error) -> {
+                    if (FirebaseAuth.getInstance().getUid() != null) {
+                        assert value != null;
+                        if (value.exists())
+                            bad.setText("Bad review count: " + (value.getData().get("bad")));
+
+                    }
+                });
+    }
+
+
+
 }

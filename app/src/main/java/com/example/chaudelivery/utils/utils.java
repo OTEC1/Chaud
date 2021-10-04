@@ -6,21 +6,23 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.provider.Settings;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -35,27 +37,35 @@ import com.example.chaudelivery.R;
 import com.example.chaudelivery.UI.Login;
 import com.example.chaudelivery.UI.MainActivity;
 import com.example.chaudelivery.UI.account;
+import com.example.chaudelivery.model.User;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.InputStream;
 import java.lang.reflect.Type;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import javax.net.ssl.HttpsURLConnection;
+
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import static com.example.chaudelivery.utils.Constant.IMG_URL;
 
 public class utils {
 
 
     private SharedPreferences sp;
+    private Bitmap bitmap1;
 
-    //Cache on  temp data on User machine
+    //Cache on temp data on User machine
     public SharedPreferences init(Context view) {
         return sp = Objects.requireNonNull(view.getSharedPreferences(view.getString(R.string.app_name), Context.MODE_PRIVATE));
     }
@@ -80,7 +90,7 @@ public class utils {
 
 
                 case R.id.log:
-                    buildAlertMessageNoGps(appCompatActivity);
+                    buildSignOutalert(appCompatActivity);
                     return true;
 
             }
@@ -89,22 +99,25 @@ public class utils {
     }
 
 
-    private void buildAlertMessageNoGps(Context context) {
+    private void buildSignOutalert(Context context) {
         if (FirebaseAuth.getInstance().getUid() != null) {
             final AlertDialog.Builder builder = new AlertDialog.Builder(context)
                     .setTitle(context.getString(R.string.app_name))
-                    .setMessage("Pls Sign out , would you like to Sign out?")
+                    .setMessage("Would you like to Sign out ?")
                     .setCancelable(false)
-                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                        public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
-                            init(context).edit().putString(context.getString(R.string.LAST_SIGN_IN_DELIVERY), FirebaseAuth.getInstance().getUid()).apply();
-                            FirebaseAuth.getInstance().signOut();
-                            context.startActivity(new Intent(context, Login.class));
+                    .setNegativeButton("No", (w, b) -> {
+                        w.dismiss();
+                    })
+                    .setPositiveButton("Yes", (dialog, id) -> {
+                        init(context).edit().putString(context.getString(R.string.LAST_SIGN_IN_DELIVERY), FirebaseAuth.getInstance().getUid()).apply();
+                        init(context).edit().putString(context.getString(R.string.DELIVERY), null).apply();
+                        FirebaseAuth.getInstance().signOut();
+                        context.startActivity(new Intent(context, Login.class));
 
-                        }
                     });
             final AlertDialog alert = builder.create();
             alert.show();
+
         } else
             context.startActivity(new Intent(context, Login.class));
     }
@@ -197,40 +210,26 @@ public class utils {
 
 
     //Delivery Guy details
-    public void CACHE_VENDOR(UserLocation user, Context context, int i, String tag) {
+    public void CACHE_VENDOR(User user, Context context, int i, String tag, ProgressBar progressBar) {
         if (i == 0)
             init(context).edit().putString(tag, null).apply();
-        SharedPreferences.Editor collection = init(context).edit();
         String area = new Gson().toJson(user);
-        collection.putString(tag, area);
-        collection.apply();
+        init(context).edit().putString(tag, area).apply();
         context.startActivity(new Intent(context, MainActivity.class));
+        progressBar.setVisibility(View.INVISIBLE);
+
 
     }
 
 
     //Get Sign in Vendor.
     @RequiresApi(api = Build.VERSION_CODES.N)
-    public UserLocation GET_DELIVERY_CACHED(Context view, String tag) {
+    public User GET_DELIVERY_CACHED(Context view, String tag) {
         String arrayListString = init(view).getString(tag, null);
-        Type type = new TypeToken<UserLocation>() {
+        Type type = new TypeToken<User>() {
         }.getType();
         return new Gson().fromJson(arrayListString, type);
 
-    }
-
-
-    public void USER_DATA(Context context) {
-
-        DocumentReference reference = FirebaseFirestore.getInstance().collection(context.getString(R.string.DELIVERY_LOCATION)).document(Objects.requireNonNull(FirebaseAuth.getInstance().getUid()));
-        reference.get().addOnCompleteListener(o -> {
-            if (o.isSuccessful())
-                CACHE_VENDOR(o.getResult().toObject(UserLocation.class), context, 0, context.getString(R.string.VENDOR));
-            else {
-                new utils().message("Error Occurred" + o.getException(), context);
-                USER_DATA(context);
-            }
-        });
     }
 
 
@@ -266,4 +265,26 @@ public class utils {
 
         return p;
     }
+
+
+    public User SERVE(String decor, String img_url, String name) {
+        User u = new User();
+        u.setName(decor);
+        u.setImg_url(img_url);
+        u.setUsername(name.replace("Vendor:", ""));
+        return u;
+    }
+
+
+    public BitmapDescriptor return_bit_from_url(int img, Context context) {
+        Drawable vectorDrawable = ContextCompat.getDrawable(context, img);
+        vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
+        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        vectorDrawable.draw(canvas);
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
+
+    }
+
+
 }

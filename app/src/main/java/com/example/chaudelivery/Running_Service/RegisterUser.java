@@ -1,19 +1,15 @@
 package com.example.chaudelivery.Running_Service;
 
 import android.app.Activity;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
 
 import com.example.chaudelivery.R;
-import com.example.chaudelivery.utils.Constant.*;
 import com.example.chaudelivery.utils.utils;
 
 import java.net.URL;
 
 import me.pushy.sdk.Pushy;
-
-import static com.example.chaudelivery.utils.Constant.*;
 
 public class RegisterUser extends AsyncTask<Void,Void,Object> {
 

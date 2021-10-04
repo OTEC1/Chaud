@@ -2,6 +2,7 @@ package com.example.chaudelivery.utils;
 
 public class Constant {
 
+    public static final String MAP_KEY = "MapViewBundleKey";
     public static final int ERROR_DIALOG_REQUEST = 9001;
     public static final int PERMISSIONS_REQUEST_ENABLE_GPS = 7001;
     public static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 5001;
@@ -12,6 +13,7 @@ public class Constant {
     public  final  static  int PICK_IMAGE = 9002;
     public static double latitude=0;
     public static double longtitude=0;
+    public  static  int C = 0;
 
 
 

@@ -27,6 +27,7 @@ import com.example.chaudelivery.Running_Service.Keep_alive;
 import com.example.chaudelivery.Running_Service.PushReceiver;
 import com.example.chaudelivery.Running_Service.RegisterUser;
 import com.example.chaudelivery.model.User;
+import com.example.chaudelivery.utils.Constant;
 import com.example.chaudelivery.utils.UserLocation;
 import com.example.chaudelivery.utils.utils;
 import com.google.android.gms.common.ConnectionResult;
@@ -43,6 +44,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import me.pushy.sdk.Pushy;
@@ -54,16 +57,17 @@ import static com.example.chaudelivery.utils.Constant.PERMISSIONS_REQUEST_ENABLE
 import static com.example.chaudelivery.utils.Constant.READ_STORAGE_PERMISSION_REQUEST_CODE;
 import static com.example.chaudelivery.utils.Constant.Time_lapsed;
 import static com.example.chaudelivery.utils.Constant.UPDATE_INTERVAL;
+import static com.example.chaudelivery.utils.Constant.latitude;
+import static com.example.chaudelivery.utils.Constant.longtitude;
 
-public class  MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNavigationView;
-    private DocumentReference documentReference;
-    private Task<DocumentSnapshot> task1;
     private UserLocation muserLocation;
     private SharedPreferences sp;
     private Keep_alive keep_alive;
     private Intent intent;
+    private FirebaseFirestore fire;
 
 
     private long back_pressed;
@@ -74,15 +78,19 @@ public class  MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (FirebaseAuth.getInstance().getUid() != null) {
-            new utils().openFragment(new notification(), "notification", 1, this);
-            if (checkMapServices()) {
-                if (mLocationPermissionGranted) {
-                    getUserDetails();
-                } else
-                    getLocationPermission();
-            }
-        } else
+        if (CHECKED())
+            if (FirebaseAuth.getInstance().getUid() != null) {
+                new utils().openFragment(new notification(), "notification", 1, this);
+                if (checkMapServices()) {
+                    if (mLocationPermissionGranted) {
+                        getUserDetails();
+                    } else
+                        getLocationPermission();
+                }
+
+            } else
+                new utils().message2("Pls sign in", this);
+        else
             new utils().message2("Pls sign in", this);
 
     }
@@ -90,17 +98,21 @@ public class  MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        fire = FirebaseFirestore.getInstance();
 
         if (FirebaseAuth.getInstance().getUid() == null)
-            startActivity(new Intent(getApplicationContext(), Login.class));
-
-        setContentView(R.layout.activity_main);
+            LOGIN();
+        else if (!CHECKED())
+            LOGIN();
         bottomNavigationView = findViewById(R.id.bottomNav);
         new utils().bottom_nav(bottomNavigationView, this, sp);
         NOTIFICATION_LISTER();
         POLICY_SERVICE();
         CHECK_FOR_PERMISSION();
+        TOKEN();
     }
+
 
 
     private void NOTIFICATION_LISTER() {
@@ -183,6 +195,7 @@ public class  MainActivity extends AppCompatActivity {
             return true;
         }
     }
+
 
     //Step 4
     private void buildAlertMessageNoGps() {
@@ -286,23 +299,22 @@ public class  MainActivity extends AppCompatActivity {
     //Step 2
     private void getUserDetails() {
         if (muserLocation == null) {
-            DocumentReference user_ref = FirebaseFirestore.getInstance().collection(getString(R.string.DELIVERY_REG)).document(Objects.requireNonNull(FirebaseAuth.getInstance().getUid()));
+            DocumentReference user_ref = fire.collection(getString(R.string.DELIVERY_REG)).document(Objects.requireNonNull(FirebaseAuth.getInstance().getUid()));
             user_ref.get().addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     Log.d(TAG, " onComplete successfully got details");
-                    task1 = task;
-                    getLast_know_Location(task1);
-                }
+                    getLast_know_Location(task.getResult().toObject(User.class));
+                } else
+                    Log.d(TAG, " Error occurred " + task.getException());
+
             });
-        } else
-            getLast_know_Location(task1);
+        }
     }
 
 
     //Step 3
-    private void getLast_know_Location(Task<DocumentSnapshot> task) {
+    private void getLast_know_Location(User user) {
         Log.d(TAG, " requesting for last known location");
-
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
             return;
@@ -320,9 +332,11 @@ public class  MainActivity extends AppCompatActivity {
                 for (Location location : locationResult.getLocations()) {
                     if (location != null) {
                         GeoPoint geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
-                        User user = task.getResult().toObject(User.class);
+                        user.setToken(new utils().init(getApplicationContext()).getString(getString(R.string.DEVICE_TOKEN), ""));
                         muserLocation = new UserLocation(geoPoint, null, user);
-                        if (FirebaseAuth.getInstance().getUid() != null && geoPoint.getLatitude() > 0 && geoPoint.getLongitude() > 0)
+                        longtitude = location.getLongitude();
+                        latitude = location.getLatitude();
+                        if (FirebaseAuth.getInstance().getUid() != null && geoPoint.getLatitude() > 0 && geoPoint.getLongitude() > 0 && CHECKED())
                             saveUserLocation(muserLocation);
 
                     }
@@ -331,22 +345,21 @@ public class  MainActivity extends AppCompatActivity {
         };
         LocationServices.getFusedLocationProviderClient(getApplicationContext()).requestLocationUpdates(mLocationRequest, mLocationCallback, null);
 
-
-
     }
 
-    private void saveUserLocation(UserLocation muserLocation) {
 
-        FirebaseFirestore.getInstance().collection(getString(R.string.DELIVERY_LOCATION)).document(FirebaseAuth.getInstance().getUid())
-                .set(muserLocation).addOnCompleteListener(o -> {
-            if (o.isSuccessful())
-                Log.d(TAG, "saveUserLocation: GOOD");
-            else
-                new utils().message2("Error Occurred on data insert: " + o.getException(), this);
-
-
+    private void saveUserLocation(UserLocation muserLocations) {
+        fire.collection(getString(R.string.DELIVERY_LOCATION)).document(FirebaseAuth.getInstance().getUid())
+                .set(muserLocations).addOnCompleteListener(o -> {
+                if (o.isSuccessful())
+                    Log.d(TAG, "Complete: ");
+                else
+                    Log.d(TAG, "Error occurred "+o.getException());
         });
+
+
     }
+
 
 
     @Override
@@ -360,5 +373,35 @@ public class  MainActivity extends AppCompatActivity {
             back_pressed = System.currentTimeMillis();
         } else
             super.onBackPressed();
+    }
+
+
+    private boolean CHECKED() {
+        if (new utils().init(getApplicationContext()).getString(getString(R.string.DELIVERY), null) != null && new utils().init(getApplicationContext()).getString(getString(R.string.DELIVERY), null).trim().length() > 0)
+            return true;
+        else
+            return false;
+    }
+
+
+    private void LOGIN() {
+        startActivity(new Intent(this, Login.class).putExtra("check_view", String.valueOf(2)));
+    }
+
+    private void TOKEN() {
+        if(Constant.REQUEST_KEY == null)
+            TOKEN_CHECK();
+    }
+
+
+    private void TOKEN_CHECK() {
+            fire.collection(getString(R.string.ADMINS)).document(getString(R.string.Teasers))
+                    .get().addOnCompleteListener(h->{
+                        if(h.isSuccessful())
+                            Constant.REQUEST_KEY = h.getResult().get("Push_4_chau").toString();
+                        else
+                            Log.d(TAG, "Error occurred on TOKEN_CHECK: "+h.getException());
+            });
+
     }
 }

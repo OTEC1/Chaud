@@ -8,7 +8,7 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/order_location"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="180dp"
         android:layout_margin="10dp"
         app:cardCornerRadius="10dp">
 
@@ -17,22 +17,39 @@
             android:layout_height="wrap_content"
             android:layout_margin="10dp">
 
-
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/vendor_img"
-                android:layout_width="96dp"
-                android:layout_height="96dp"
-                android:layout_margin="10dp"
-                app:civ_border_color="#FFF"
-                app:civ_border_width="3dp" />
+            <RelativeLayout
+                android:id="@+id/left_section"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
 
 
-            <ProgressBar
-                android:id="@+id/progressBar"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_margin="35dp" />
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/vendor_img"
+                    android:layout_width="96dp"
+                    android:layout_height="96dp"
+                    android:layout_centerHorizontal="true"
+                    app:civ_border_color="#FFF"
+                    app:civ_border_width="3dp" />
 
+
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_margin="35dp" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/completed_order"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/custom_lines1"
+                    android:paddingStart="15sp"
+                    android:paddingLeft="15sp"
+                    app:drawableLeftCompat="@drawable/ic_baseline_campaign_24"
+                    app:drawableStartCompat="@drawable/ic_baseline_campaign_24" />
+            </RelativeLayout>
 
             <TextView
                 android:id="@+id/drop_off_phone"
@@ -42,7 +59,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_marginEnd="10dp"
                 android:layout_marginRight="10dp"
-                android:layout_toRightOf="@id/vendor_img"
+                android:layout_toRightOf="@id/left_section"
                 app:drawableLeftCompat="@drawable/ic_whatsapp_2"
                 app:drawableStartCompat="@drawable/ic_whatsapp_2" />
 
@@ -55,7 +72,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_marginTop="7dp"
                 android:layout_marginRight="10dp"
-                android:layout_toRightOf="@id/vendor_img"
+                android:layout_toRightOf="@id/left_section"
                 android:drawableStart="@drawable/ic_baseline_push_pin_4"
                 android:drawableLeft="@drawable/ic_baseline_push_pin_4" />
 
@@ -69,7 +86,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_marginTop="7dp"
                 android:layout_marginRight="10dp"
-                android:layout_toRightOf="@id/vendor_img"
+                android:layout_toRightOf="@id/left_section"
                 android:drawableStart="@drawable/ic_baseline_access_time_4"
                 android:drawableLeft="@drawable/ic_baseline_access_time_4" />
 
@@ -83,7 +100,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_marginTop="7dp"
                 android:layout_marginRight="10dp"
-                android:layout_toRightOf="@id/vendor_img"
+                android:layout_toRightOf="@id/left_section"
                 android:drawableStart="@drawable/ic_baseline_accept_user"
                 android:drawableLeft="@drawable/ic_baseline_accept_user" />
 
@@ -97,8 +114,8 @@
                 android:layout_alignParentRight="true"
                 android:layout_marginTop="7dp"
                 android:layout_marginRight="10dp"
-                android:layout_toEndOf="@id/vendor_img"
-                android:layout_toRightOf="@id/vendor_img"
+                android:layout_toEndOf="@id/left_section"
+                android:layout_toRightOf="@id/left_section"
                 android:drawableStart="@drawable/ic_baseline_location_on_4"
                 android:drawableLeft="@drawable/ic_baseline_location_on_4" />
 
@@ -112,8 +129,8 @@
                 android:layout_alignParentRight="true"
                 android:layout_marginTop="7dp"
                 android:layout_marginRight="10dp"
-                android:layout_toEndOf="@id/vendor_img"
-                android:layout_toRightOf="@id/vendor_img"
+                android:layout_toEndOf="@id/left_section"
+                android:layout_toRightOf="@id/left_section"
                 app:drawableLeftCompat="@drawable/ic_whatsapp_2"
                 app:drawableStartCompat="@drawable/ic_whatsapp_2" />
 
@@ -139,6 +156,15 @@
 
 
         </RelativeLayout>
+
+        <ProgressBar
+            android:id="@+id/progressBar2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_margin="30dp"
+            android:visibility="invisible" />
+
 
     </androidx.cardview.widget.CardView>
 

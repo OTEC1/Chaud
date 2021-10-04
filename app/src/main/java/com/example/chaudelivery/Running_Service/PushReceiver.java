@@ -15,9 +15,6 @@ import androidx.core.app.NotificationCompat;
 
 import com.example.chaudelivery.R;
 import com.example.chaudelivery.UI.Accept_Order;
-import com.example.chaudelivery.UI.MainActivity;
-import com.example.chaudelivery.utils.Constant;
-import com.google.firebase.auth.FirebaseAuth;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -29,7 +26,6 @@ import me.pushy.sdk.Pushy;
 
 import static com.example.chaudelivery.utils.Constant.NOTIFICATION_TITLE;
 import static com.example.chaudelivery.utils.Constant.*;
-import static com.example.chaudelivery.utils.Constant.NOTIFICATION_TITLE;
 
 public class PushReceiver extends BroadcastReceiver {
 
@@ -43,6 +39,7 @@ public class PushReceiver extends BroadcastReceiver {
         intent1.putExtra("Vendor_img_url", intent.getStringExtra("Vendor_img_url"));
         intent1.putExtra("Vendor_ID",intent.getStringExtra("Vendor_ID"));
         intent1.putExtra("Client_ID",intent.getStringExtra("Client_ID"));
+        intent1.putExtra("Client_name", intent.getStringExtra("Client_name"));
         intent1.putExtra("Vendor_Phone", intent.getStringExtra("Vendor_Phone"));
         intent1.putExtra("Order_id", intent.getStringExtra("Order_id"));
         intent1.putExtra("Order_items", intent.getIntExtra("Order_items",0));
@@ -52,6 +49,7 @@ public class PushReceiver extends BroadcastReceiver {
         intent1.putExtra("Drop_off_phone_no", intent.getStringExtra("Drop_off_phone_no"));
         intent1.putExtra("Timestamp", intent.getLongExtra("Timestamp",0));
         intent1.putExtra("doc_id_Gen", intent.getStringExtra("doc_id_Gen"));
+        intent1.putExtra("user_img_url", intent.getStringExtra("user_img_url"));
         int notificationID = new Random().nextInt(3000);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent1, PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context)

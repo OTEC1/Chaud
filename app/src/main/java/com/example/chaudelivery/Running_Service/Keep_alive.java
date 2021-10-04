@@ -18,7 +18,6 @@ import androidx.core.app.NotificationCompat;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static com.example.chaudelivery.utils.Constant.*;
 import static com.example.chaudelivery.utils.Constant.ADMIN_CHANNEL_ID;
 import static com.example.chaudelivery.utils.Constant.CHANNEL_NAME;
 
@@ -48,7 +47,6 @@ public class Keep_alive extends Service {
         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         manager.createNotificationChannel(chau);
         NotificationCompat.Builder noBuilder = new NotificationCompat.Builder(this, ADMIN_CHANNEL_ID);
-
         Notification notification= noBuilder.setOngoing(true)
                 .setContentTitle("Chauvendor is running")
                 .setPriority(NotificationManager.IMPORTANCE_MIN)
@@ -72,7 +70,7 @@ public class Keep_alive extends Service {
         stopTimer();
         Intent intent = new Intent();
         intent.setAction("restartservice");
-        intent.setClass(this, com.example.chaudelivery.Running_Service.PushReceiver.class);
+        intent.setClass(this, PushReceiver.class);
         intent.putExtra("O","1");
         this.sendBroadcast(intent);
         super.onDestroy();
