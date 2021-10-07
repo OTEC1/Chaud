@@ -53,11 +53,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.net.ssl.HttpsURLConnection;
-
 import de.hdodenhof.circleimageview.CircleImageView;
 
-import static com.example.chaudelivery.utils.Constant.IMG_URL;
 
 public class utils {
 
@@ -240,6 +237,7 @@ public class utils {
                 .skipMemoryCache(true);
 
         Glide.with(poster_value.getContext()).load(url)
+                .error(R.drawable.ic_baseline_error_outline_24)
                 .listener(new RequestListener<Drawable>() {
                     @Override
                     public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {

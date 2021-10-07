@@ -65,13 +65,12 @@ public class PushReceiver extends BroadcastReceiver {
         if (intent.getStringExtra("Vendor_img_url") != null) {
             Bitmap bitmap = get_img_url(intent.getStringExtra("Vendor_img_url"));
             builder.setStyle(new NotificationCompat.BigPictureStyle().bigPicture(bitmap).bigLargeIcon(null)).setLargeIcon(bitmap);
-            Log.d(TAG, intent.getStringExtra("Vendor_img_url"));
         }
 
         Pushy.setNotificationChannel(builder, context);
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
         notificationManager.notify(notificationID, builder.build());
-        if (intent.getExtras() != null)
+        if (intent.getStringExtra("O") != null)
             if (intent.getStringExtra("O").equals("1"))
                 notificationManager.cancelAll();
     }
