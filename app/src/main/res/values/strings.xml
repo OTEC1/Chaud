@@ -24,4 +24,6 @@
     <string name="USER_REG">User Registration</string>
     <string name="ADMINS">admins</string>
     <string name="Teasers">Teasers</string>
+    <string name="DISPATCHED_ORDERS_DELCINE">DISPATCHED_ORDERS_DELCINE</string>
+    <string name="OPENED_ORDERS_COUNT">OPENED_ORDERS_COUNT</string>
 </resources>

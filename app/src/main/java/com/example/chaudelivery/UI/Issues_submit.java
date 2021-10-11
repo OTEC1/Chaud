@@ -49,8 +49,10 @@ public class Issues_submit extends AppCompatActivity {
         FirebaseFirestore.getInstance().collection("Issues")
                 .document().set(MAP()).addOnCompleteListener(u -> {
             if (u.isSuccessful()) {
-                new utils().message2("Issues received so sorry for the inconvenience, we are looking into it right away", this);
+                new utils().message2("Sorry for the inconvenience, A ticket has been Opened", this);
                 progressDialog.dismiss();
+                issues_describe.setText("");
+                issues_reporter_email.setText("");
             }else {
                 new utils().message2(" Error occurred while submitting Issues " + u.getException(), this);
                 progressDialog.dismiss();
@@ -62,6 +64,11 @@ public class Issues_submit extends AppCompatActivity {
         Map<String, Object> o = new HashMap<>();
         o.put("issue_user_email", issues_reporter_email.getText().toString());
         o.put("issues", issues_describe.getText().toString());
+        o.put("Status", true);
+        if (getIntent().getStringExtra("order_id") != null)
+            o.put("order_id", getIntent().getStringExtra("order_id"));
+        else
+            o.put("order_id", "");
         return o;
     }
 

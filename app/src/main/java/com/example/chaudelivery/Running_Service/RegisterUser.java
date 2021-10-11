@@ -24,10 +24,7 @@ public class RegisterUser extends AsyncTask<Void,Void,Object> {
     protected Object doInBackground(Void... voids) {
         try {
             String deviceToken = Pushy.register(activity.getApplicationContext());
-            Log.d(TAG,"Pushy Device token: "+deviceToken);
-
             new URL("https://com.example.chauvendor/regsiter/device?token="+deviceToken).openConnection();
-
             return  deviceToken;
         } catch (Exception e) {
 
@@ -40,7 +37,6 @@ public class RegisterUser extends AsyncTask<Void,Void,Object> {
     protected void onPostExecute(Object o) {
 
        if(o instanceof Exception){
-           Log.d(TAG,  o.toString());
            new utils().init(activity.getApplicationContext())
                    .edit().putBoolean(activity.getString(R.string.DEVICE_REG_TOKEN),false).apply();
 

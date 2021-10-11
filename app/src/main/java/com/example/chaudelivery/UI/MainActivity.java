@@ -36,16 +36,12 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 import me.pushy.sdk.Pushy;
@@ -58,7 +54,7 @@ import static com.example.chaudelivery.utils.Constant.READ_STORAGE_PERMISSION_RE
 import static com.example.chaudelivery.utils.Constant.Time_lapsed;
 import static com.example.chaudelivery.utils.Constant.UPDATE_INTERVAL;
 import static com.example.chaudelivery.utils.Constant.latitude;
-import static com.example.chaudelivery.utils.Constant.longtitude;
+import static com.example.chaudelivery.utils.Constant.longitude;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -316,35 +312,36 @@ public class MainActivity extends AppCompatActivity {
     private void getLast_know_Location(User user) {
         Log.d(TAG, " requesting for last known location");
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-            return;
+        if(user!=null) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+                return;
 
-        LocationRequest mLocationRequest = LocationRequest.create();
-        mLocationRequest.setInterval(GPRS_INTERVAL);
-        mLocationRequest.setFastestInterval(UPDATE_INTERVAL);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-        LocationCallback mLocationCallback = new LocationCallback() {
-            @Override
-            public void onLocationResult(@NonNull LocationResult locationResult) {
-                if (locationResult == null)
-                    return;
+            LocationRequest mLocationRequest = LocationRequest.create();
+            mLocationRequest.setInterval(GPRS_INTERVAL);
+            mLocationRequest.setFastestInterval(UPDATE_INTERVAL);
+            mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+            LocationCallback mLocationCallback = new LocationCallback() {
+                @Override
+                public void onLocationResult(@NonNull LocationResult locationResult) {
+                    if (locationResult == null)
+                        return;
 
-                for (Location location : locationResult.getLocations()) {
-                    if (location != null) {
-                        GeoPoint geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
-                        user.setToken(new utils().init(getApplicationContext()).getString(getString(R.string.DEVICE_TOKEN), ""));
-                        muserLocation = new UserLocation(geoPoint, null, user);
-                        longtitude = location.getLongitude();
-                        latitude = location.getLatitude();
-                        if (FirebaseAuth.getInstance().getUid() != null && geoPoint.getLatitude() > 0 && geoPoint.getLongitude() > 0 && CHECKED())
-                            saveUserLocation(muserLocation);
+                    for (Location location : locationResult.getLocations()) {
+                        if (location != null) {
+                            GeoPoint geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
+                            user.setToken(new utils().init(getApplicationContext()).getString(getString(R.string.DEVICE_TOKEN), ""));
+                            muserLocation = new UserLocation(geoPoint, null, user);
+                            longitude = location.getLongitude();
+                            latitude = location.getLatitude();
+                            if (FirebaseAuth.getInstance().getUid() != null && geoPoint.getLatitude() > 0 && geoPoint.getLongitude() > 0 && CHECKED())
+                                saveUserLocation(muserLocation);
 
+                        }
                     }
                 }
-            }
-        };
-        LocationServices.getFusedLocationProviderClient(getApplicationContext()).requestLocationUpdates(mLocationRequest, mLocationCallback, null);
-
+            };
+            LocationServices.getFusedLocationProviderClient(getApplicationContext()).requestLocationUpdates(mLocationRequest, mLocationCallback, null);
+        }
     }
 
 

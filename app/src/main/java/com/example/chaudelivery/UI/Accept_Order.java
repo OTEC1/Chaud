@@ -46,7 +46,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import static com.example.chaudelivery.utils.Constant.GPRS_INTERVAL;
 import static com.example.chaudelivery.utils.Constant.UPDATE_INTERVAL;
 import static com.example.chaudelivery.utils.Constant.latitude;
-import static com.example.chaudelivery.utils.Constant.longtitude;
+import static com.example.chaudelivery.utils.Constant.longitude;
 
 public class Accept_Order extends AppCompatActivity {
 
@@ -55,12 +55,11 @@ public class Accept_Order extends AppCompatActivity {
     private CircleImageView circleImageView;
     private ProgressBar progressBar;
     private ProgressDialog progressDialog;
-    
-    
+
+
     private User user;
     private List<UserLocation> points;
-    private double  latitudes, longtitudes;
-    
+    private double latitudes, longtitudes;
 
 
     private final String TAG = "AcceptOrder";
@@ -93,7 +92,10 @@ public class Accept_Order extends AppCompatActivity {
         getLast_know_Location();
         CHECK_SIGNED_IN_DELIVERY();
 
-        user = call(getApplicationContext());
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+            user = call(getApplicationContext());
+
 
         accept.setOnClickListener(j -> {
 
@@ -119,7 +121,8 @@ public class Accept_Order extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public User call(Context applicationContext) {
-     return    new utils().GET_DELIVERY_CACHED(applicationContext, applicationContext.getString(R.string.DELIVERY)); }
+        return new utils().GET_DELIVERY_CACHED(applicationContext, applicationContext.getString(R.string.DELIVERY));
+    }
 
 
     private void CHECK_SIGNED_IN_DELIVERY() {
@@ -150,7 +153,6 @@ public class Accept_Order extends AppCompatActivity {
                 .document("Orders").collection(getIntent().getStringExtra("Client_ID"));
         x.get().addOnCompleteListener(h -> {
             if (h.isSuccessful()) {
-                Log.d(TAG, "ACCEPT_LOGIC: " + x.getPath());
                 List<DocumentSnapshot> m = h.getResult().getDocuments();
                 for (DocumentSnapshot n : m) {
                     if (n.getId().equals(getIntent().getStringExtra("doc_id_Gen")))
@@ -178,7 +180,6 @@ public class Accept_Order extends AppCompatActivity {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
                     if (maps.get("Delivery").toString().equals("0000")) {
                         UPDATE_COLUMN(FirebaseAuth.getInstance().getUid());
-                        Log.d(TAG, "Step 1");
                     } else {
                         progressDialog.dismiss();
                         new utils().message("Request failed  Order already taken", this);
@@ -200,9 +201,8 @@ public class Accept_Order extends AppCompatActivity {
         FirebaseFirestore.getInstance().collection(getString(R.string.PAID_VENDORS_SECTION)).document("Orders").collection(getIntent().getStringExtra("Client_ID")).document("1A").collection("A1").document(getIntent().getStringExtra("Order_id")).update(new utils().maps(delivery_uid, 0)).addOnCompleteListener(o -> {
             if (o.isSuccessful()) {
                 SECOND_UPDATE(delivery_uid);
-                Log.d(TAG, "Step 2");
             } else {
-                Log.d(TAG, "Error occurred while UPDATING_COLUMN: ");
+                Log.d(TAG, "Error occurred while  " + o.getException());
                 progressDialog.dismiss();
             }
         });
@@ -214,9 +214,8 @@ public class Accept_Order extends AppCompatActivity {
         FirebaseFirestore.getInstance().collection(getString(R.string.PAID_VENDORS_SECTION)).document("Orders").collection(getIntent().getStringExtra("Client_ID")).document(getIntent().getStringExtra("doc_id_Gen")).update(new utils().maps(delivery_uid, 1)).addOnCompleteListener(o -> {
             if (o.isSuccessful()) {
                 CREATE_DELIVERY_ORDERS_TABLE();
-                Log.d(TAG, "Step 3");
             } else {
-                Log.d(TAG, "Error occurred while UPDATING_COLUMN: ");
+                Log.d(TAG, "Error occurred " + o.getException());
                 progressDialog.dismiss();
             }
         });
@@ -224,23 +223,34 @@ public class Accept_Order extends AppCompatActivity {
 
 
     private void CREATE_DELIVERY_ORDERS_TABLE() {
-        if (latitude != 0 && longtitude != 0) {
-            points.add(LOOP_GEO(getIntent().getExtras().getString("Pick_up_geo_point"), "Pick up", getIntent().getStringExtra("user_img_url"), getIntent().getStringExtra("Client_name")));
-            points.add(LOOP_GEO(getIntent().getStringExtra("Drop_off_geo_point"), "Drop off", getIntent().getStringExtra("Vendor_img_url"), getIntent().getStringExtra("Vendor")));
+        if (latitude != 0 && longitude != 0) {
+            points.add(LOOP_GEO(getIntent().getExtras().getString("Pick_up_geo_point"), "Pickup", getIntent().getStringExtra("user_img_url"), getIntent().getStringExtra("Client_name")));
+            points.add(LOOP_GEO(getIntent().getStringExtra("Drop_off_geo_point"), "Dropoff", getIntent().getStringExtra("Vendor_img_url"), getIntent().getStringExtra("Vendor")));
             points.add(LOOP_GEO("Delivery", "Delivery location", user.getImg_url(), user.getName()));
             DocumentReference documentReference = FirebaseFirestore.getInstance().collection(getString(R.string.DISPATCHED_ORDERS)).document(FirebaseAuth.getInstance().getUid()).collection("orders").document();
             documentReference.set(map(documentReference.getId())).addOnCompleteListener(u -> {
                 if (u.isSuccessful())
-                    if (points.size() == 3)
+                    if (points.size() == 3) {
                         startActivity(new Intent(getApplicationContext(), Map_views.class).putExtra("GEO_POINTS", new Gson().toJson(points)));
-                    else {
-                        Log.d(TAG, "CREATE_DELIVERY_EXCEPTION: " + u.getException());
-                        progressDialog.dismiss();
-                    }
+                        LOCAL_CACHE_OPENED_ORDERS_COUNT(1);
+                    } else
+                        new utils().message2("List not complete ! ", this);
+                else {
+                    Log.d(TAG, "CREATE_DELIVERY_EXCEPTION: " + u.getException());
+                    progressDialog.dismiss();
+                }
 
             });
         } else
-            Log.d(TAG, "Geo point is null ");
+            new utils().message2("GeoPoint is null ", this);
+    }
+
+    private void LOCAL_CACHE_OPENED_ORDERS_COUNT(int i) {
+
+        if (new utils().init(getApplicationContext()).getString(getString(R.string.OPENED_ORDERS_COUNT), null) != null)
+            new utils().APPLY(getApplicationContext(), i + Integer.parseInt(new utils().init(getApplicationContext()).getString(getString(R.string.OPENED_ORDERS_COUNT), null)));
+        else
+            new utils().APPLY(getApplicationContext(), i);
     }
 
 
@@ -272,11 +282,8 @@ public class Accept_Order extends AppCompatActivity {
         if (!drop_off.equals("Delivery")) {
             latitudes = Double.parseDouble(drop_off.substring(drop_off.indexOf(":") + 1, drop_off.indexOf(",")));
             longtitudes = Double.parseDouble(drop_off.substring(drop_off.lastIndexOf(":") + 1, drop_off.indexOf("}")));
-        } else {
-            latitudes = latitude;
-            longtitudes = longtitude;
         }
-        return new UserLocation(new GeoPoint(latitudes, longtitudes), null, new utils().SERVE(decor, img_url, name));
+        return new UserLocation(new GeoPoint(latitudes, longtitudes), null, new utils().SERVE(decor, name,img_url));
     }
 
 
@@ -285,6 +292,7 @@ public class Accept_Order extends AppCompatActivity {
         longtitudes = Double.parseDouble(drop_off.substring(drop_off.lastIndexOf(":") + 1, drop_off.indexOf("}")));
         return new GeoPoint(latitudes, longtitudes);
     }
+
 
     private void getLast_know_Location() {
         Log.d(TAG, " requesting for last known location");
@@ -306,8 +314,7 @@ public class Accept_Order extends AppCompatActivity {
                     for (Location location : locationResult.getLocations()) {
                         if (location != null) {
                             latitude = location.getLatitude();
-                            longtitude = location.getLongitude();
-                            Log.d(TAG, " Got locations  " + latitude + "  " + longtitude);
+                            longitude = location.getLongitude();
                         }
                     }
                 }
@@ -327,7 +334,22 @@ public class Accept_Order extends AppCompatActivity {
 
 
     private void DECLINE_LOGIC(String uid) {
+        startActivity(new Intent(getApplicationContext(), MainActivity.class));
+        if (new utils().init(getApplicationContext()).getString(getString(R.string.OPENED_ORDERS_COUNT), null) != null)
+            if (Integer.parseInt(new utils().init(getApplicationContext()).getString(getString(R.string.OPENED_ORDERS_COUNT), null)) != 0)
+                FirebaseFirestore.getInstance().collection(getString(R.string.DISPATCHED_ORDERS_DELCINE)).document().set(MAP(uid))
+                        .addOnCompleteListener(h -> {
+                            if (!h.isSuccessful())
+                                Log.d(TAG, "Error occurred " + h.getException());
+                            else
+                                Log.d(TAG, "DECLINE_LOGIC: SENT");
+                        });
 
+    }
+
+
+    private Map<String, Object> MAP(String uid) {
+        return null;
     }
 
 

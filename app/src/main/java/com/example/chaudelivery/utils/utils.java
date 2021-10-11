@@ -14,6 +14,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -67,9 +68,7 @@ public class utils {
         return sp = Objects.requireNonNull(view.getSharedPreferences(view.getString(R.string.app_name), Context.MODE_PRIVATE));
     }
 
-    public SharedPreferences start(Context context) {
-        return sp = PreferenceManager.getDefaultSharedPreferences(context);
-    }
+
 
 
     //Bottom  Nav
@@ -207,7 +206,7 @@ public class utils {
 
 
     //Delivery Guy details
-    public void CACHE_VENDOR(User user, Context context, int i, String tag, ProgressBar progressBar) {
+    public void  CACHE_VENDOR(User user, AppCompatActivity context, int i, String tag, ProgressBar progressBar) {
         if (i == 0)
             init(context).edit().putString(tag, null).apply();
         String area = new Gson().toJson(user);
@@ -265,10 +264,10 @@ public class utils {
     }
 
 
-    public User SERVE(String decor, String img_url, String name) {
+    public User SERVE(String decor, String name, String img) {
         User u = new User();
         u.setName(decor);
-        u.setImg_url(img_url);
+        u.setImg_url(img);
         u.setUsername(name.replace("Vendor:", ""));
         return u;
     }
@@ -284,5 +283,10 @@ public class utils {
 
     }
 
+    public void APPLY(Context context, int i) {
+        Log.d("TAGUTILS", "APPLY: " + i);
+        if (i != -1)
+            new utils().init(context.getApplicationContext()).edit().putString(context.getString(R.string.OPENED_ORDERS_COUNT), String.valueOf(i)).apply();
+    }
 
 }

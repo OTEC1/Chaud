@@ -8,12 +8,13 @@ public class Constant {
     public static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 5001;
     public static final int READ_STORAGE_PERMISSION_REQUEST_CODE = 5002;
     public static int Time_lapsed = 2000;
-    public final static long UPDATE_INTERVAL = 5 * 1000;
-    public final static long GPRS_INTERVAL = 3000;
+    public final static long UPDATE_INTERVAL = 3000;
+    public final static long GPRS_INTERVAL = 2000;
     public  final  static  int PICK_IMAGE = 9002;
-    public static double latitude=0;
-    public static double longtitude=0;
+    public static double latitude =0;
+    public static double longitude =0;
     public  static  int C = 0;
+    public  static  String VENDOR_NO;
 
 
 

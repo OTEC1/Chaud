@@ -2,6 +2,7 @@ package com.example.chaudelivery.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -66,32 +67,36 @@ public class Live_orders extends RecyclerView.Adapter<Live_orders.MyHolder> {
         Populate(holder, position);
         holder.order_location.setOnClickListener(u -> {
             holder.progressBar2.setVisibility(View.VISIBLE);
-            points.add(Docs(pack.get(position).get("Drop_off_geo_point").toString(), "Drop off", u, pack.get(position).get("user_img_url").toString(), pack.get(position).get("Client_name").toString()));
-            points.add(Docs(pack.get(position).get("Pick_up_geo_point").toString(), "Pick up", u, pack.get(position).get("Vendor_img_url").toString(), pack.get(position).get("Vendor").toString()));
-            points.add(Docs("Delivery", "Delivery location", u, user1.getImg_url(), user1.getName()));
-            if (points.size() == 3)
+            points.add(Docs(pack.get(position).get("Pick_up_geo_point").toString(), "Pickup", u, pack.get(position).get("Vendor").toString(),pack.get(position).get("user_img_url").toString()));
+            points.add(Docs(pack.get(position).get("Drop_off_geo_point").toString(), "Dropoff", u, pack.get(position).get("Client_name").toString(),pack.get(position).get("Vendor_img_url").toString()));
+            if (points.size() == 2) {
                 u.getContext().startActivity(new Intent(u.getContext(), Map_views.class).putExtra("GEO_POINTS", new Gson().toJson(points)));
-        });
+                Constant.VENDOR_NO = pack.get(position).get("Vendor_Phone").toString();
+                }
+            });
 
 
         holder.completed_order.setOnClickListener(y -> {
             holder.progressBar2.setVisibility(View.VISIBLE);
-            SEND_NOTIFICATION(pack.get(position).get("Client_ID"), y, holder,position);
+            SEND_NOTIFICATION(pack.get(position).get("Client_ID"), y, holder, position);
+        });
+
+
+        holder.dialer.setOnClickListener(u -> {
+            start_dialer(pack.get(position).get("Drop_off_phone_no").toString(), holder.dialer.getContext());
         });
     }
 
 
-    private UserLocation Docs(String drop, String user, View x, String img, String name) {
-        GeoPoint geoPoint = null;
-        if (!drop.equals("Delivery"))
-            geoPoint = new GeoPoint(Double.parseDouble(drop.substring(drop.indexOf("=") + 1, drop.indexOf(","))), Double.parseDouble(drop.substring(drop.lastIndexOf("=") + 1, drop.length() - 1)));
-        else {
-            if (Constant.longtitude != 0 && Constant.longtitude != 0)
-                geoPoint = new GeoPoint(Constant.latitude, Constant.longtitude);
-            else
-                new utils().message("Requesting for Delivery GeoPoint failed", x.getContext());
-        }
-        return new UserLocation(geoPoint, null, new utils().SERVE(user, img, name));
+    public void start_dialer(String number, Context context) {
+        Intent intent = new Intent(Intent.ACTION_DIAL);
+        intent.setData(Uri.parse("tel: " + number));
+        context.startActivity(intent);
+    }
+
+
+    private UserLocation Docs(String drop, String user, View v, String name, String img) {
+        return new UserLocation(new GeoPoint(Double.parseDouble(drop.substring(drop.indexOf("=") + 1, drop.indexOf(","))), Double.parseDouble(drop.substring(drop.lastIndexOf("=") + 1, drop.length() - 1))), null, new utils().SERVE(user, name,img));
     }
 
 
@@ -107,7 +112,7 @@ public class Live_orders extends RecyclerView.Adapter<Live_orders.MyHolder> {
         private CircleImageView vendor_img;
         private ProgressBar progressBar, progressBar2;
         private CardView order_location;
-        private Button completed_order;
+        private Button completed_order, dialer;
 
         public MyHolder(@NonNull View itemView) {
             super(itemView);
@@ -124,6 +129,7 @@ public class Live_orders extends RecyclerView.Adapter<Live_orders.MyHolder> {
             vendor_img = itemView.findViewById(R.id.vendor_img);
             order_location = itemView.findViewById(R.id.order_location);
             completed_order = itemView.findViewById(R.id.completed_order);
+            dialer = itemView.findViewById(R.id.call);
         }
     }
 
@@ -146,7 +152,8 @@ public class Live_orders extends RecyclerView.Adapter<Live_orders.MyHolder> {
                             Pusher.pushrequest push = new Pusher.pushrequest(pay_load, user.getToken());
                             try {
                                 Pusher.sendPush(push);
-                                new utils().message("Notification sent ", view.getContext());
+                                new utils().message("Notification sent to " + user.getUsername(), view.getContext());
+                                REMOVE(holder.completed_order.getContext());
                                 holder.progressBar2.setVisibility(View.INVISIBLE);
                             } catch (Exception ex) {
                                 Log.d(TAG, "SEND_NOTIFICATION: " + ex.toString());
@@ -159,6 +166,11 @@ public class Live_orders extends RecyclerView.Adapter<Live_orders.MyHolder> {
                         new utils().message("Error occurred " + u.getException(), view.getContext());
                 });
 
+
+    }
+
+    private void REMOVE(Context context) {
+        new utils().APPLY(context, Integer.parseInt(new utils().init(context.getApplicationContext()).getString(context.getString(R.string.OPENED_ORDERS_COUNT), null)) - 1);
 
     }
 

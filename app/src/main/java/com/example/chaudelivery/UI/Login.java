@@ -33,7 +33,7 @@ public class Login extends AppCompatActivity {
     private ProgressBar progressBar;
     private FirebaseFirestore firebaseFirestore;
     private User user;
-    Map<String, Object> token;
+    private Map<String, Object> token;
 
 
     private long back_pressed = 2000;
@@ -46,13 +46,13 @@ public class Login extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        login = (Button) findViewById(R.id.email_sign_in_button);
-        register = (TextView) findViewById(R.id.link_register);
-        foget_pass = (Button) findViewById(R.id.forgot_pass);
-        issues = (TextView) findViewById(R.id.issues);
-        email = (EditText) findViewById(R.id.email);
-        pass = (EditText) findViewById(R.id.password);
-        progressBar = (ProgressBar) findViewById(R.id.progressBar2);
+        login =  findViewById(R.id.email_sign_in_button);
+        register =  findViewById(R.id.link_register);
+        foget_pass =  findViewById(R.id.forgot_pass);
+        issues =  findViewById(R.id.issues);
+        email =  findViewById(R.id.email);
+        pass =  findViewById(R.id.password);
+        progressBar =  findViewById(R.id.progressBar2);
         firebaseFirestore = FirebaseFirestore.getInstance();
         token = new HashMap<>();
 
@@ -187,7 +187,7 @@ public class Login extends AppCompatActivity {
         firebaseFirestore.collection(getString(R.string.DELIVERY_REG)).document(FirebaseAuth.getInstance().getUid())
                 .get().addOnCompleteListener(y -> {
             if (y.isSuccessful())
-                new utils().CACHE_VENDOR(y.getResult().toObject(User.class), getApplicationContext(), 0, getString(R.string.DELIVERY), progressBar);
+                new utils().CACHE_VENDOR(y.getResult().toObject(User.class), this, 0, getString(R.string.DELIVERY), progressBar);
             else
                 new utils().message2("Error occurred " + y.getException(), this);
         });
