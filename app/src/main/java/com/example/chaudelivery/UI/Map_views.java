@@ -54,24 +54,24 @@ import static com.example.chaudelivery.utils.Constant.MAP_KEY;
 public class Map_views extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
 
-    private LatLng lat;
+    private LatLng lat, latLng;
     private Marker marker;
     private MapView mapView;
     private GoogleMap mgoogleMap;
     private GoogleApiClient apiClient;
-    private MarkerOptions markerOptions = new MarkerOptions();
+    private MarkerOptions markerOptions;
     private Button dialer;
 
 
     private List<UserLocation> userlocations = new ArrayList<>();
-    private List<MarkerOptions> markerOptionslist = new ArrayList<>();
+    private List<Marker> markerOptionslist = new ArrayList<>();
     private List<LatLng> latLngs = new ArrayList<>();
 
 
     private LocationRequest mLocationRequest;
     private String TAG = "Map_hold";
     private User user = new User();
-    private int counts = 1;
+    private int y = 1;
 
 
     @Override
@@ -83,8 +83,7 @@ public class Map_views extends AppCompatActivity implements OnMapReadyCallback, 
 
         if (getIntent().getExtras() != null) {
             String c = getIntent().getStringExtra("GEO_POINTS");
-            Type type = new TypeToken<List<UserLocation>>() {
-            }.getType();
+            Type type = new TypeToken<List<UserLocation>>() {}.getType();
             userlocations.addAll(new Gson().fromJson(String.valueOf(c), type));
         }
         init_GM(savedInstanceState);
@@ -200,6 +199,8 @@ public class Map_views extends AppCompatActivity implements OnMapReadyCallback, 
     }
 
 
+
+
     @Override
     public void onLocationChanged(@NonNull Location location) {
 
@@ -208,20 +209,16 @@ public class Map_views extends AppCompatActivity implements OnMapReadyCallback, 
         user.setName("");
         user.setImg_url("");
         user.setUsername(FirebaseAuth.getInstance().getUid());
-
         UserLocation userlocation = new UserLocation(new GeoPoint(lat.latitude, lat.longitude), null, user);
         userlocations.add(userlocation);
-
-
-        if (marker != null)
-            marker.remove();
-        addMapMarkers(userlocations);
+        markerOptions = new MarkerOptions();
+        addMapMarkers(userlocations, y);
+        y++;
 
     }
 
 
-    private void addMapMarkers(List<UserLocation> user_locations) {
-        Log.d(TAG, "addMapMarkers:    " + user_locations);
+    private void addMapMarkers(List<UserLocation> user_locations, int y) {
 
         for (UserLocation user : user_locations) {
             String snippet = "";
@@ -230,21 +227,28 @@ public class Map_views extends AppCompatActivity implements OnMapReadyCallback, 
                 if (user.getUser().getUsername().equals(FirebaseAuth.getInstance().getUid())) {
                     snippet = "My current Location";
                     markerOptions.icon(new utils().return_bit_from_url(R.drawable.ic_baseline_electric_bike_24, this));
-                    markerOptions.position(new LatLng(latLngs.get(latLngs.size() - 1).latitude, latLngs.get(latLngs.size() - 1).longitude));
-                } else if (user.getUser().getName().equals("Dropoff")) {
+                    latLng = markerOptions.position(new LatLng(latLngs.get(latLngs.size() - 1).latitude, latLngs.get(latLngs.size() - 1).longitude)).getPosition();
+                }
+                else if (user.getUser().getName().equals("Dropoff")) {
                     snippet = user.getUser().getUsername() + " current Location";
                     markerOptions.icon(new utils().return_bit_from_url(R.drawable.ic_baseline_account_location, this));
-                    markerOptions.position(new LatLng(latLngs.get(1).latitude, latLngs.get(1).longitude));
-                } else if (user.getUser().getName().equals("Pickup")) {
+                    latLng = markerOptions.position(new LatLng(latLngs.get(1).latitude, latLngs.get(1).longitude)).getPosition();
+                }
+
+                else if (user.getUser().getName().equals("Pickup")) {
                     snippet = user.getUser().getUsername() + " current Location";
                     markerOptions.icon(new utils().return_bit_from_url(R.drawable.ic_baseline_storefront_24, this));
-                    markerOptions.position(new LatLng(latLngs.get(0).latitude, latLngs.get(0).longitude));
+                    latLng = markerOptions.position(new LatLng(latLngs.get(0).latitude, latLngs.get(0).longitude)).getPosition();
                 }
 
                 markerOptions.title(snippet);
-                marker = mgoogleMap.addMarker(markerOptions);
-                markerOptionslist.addAll(Collections.singleton(markerOptions));
-                SetCameraView(lat);
+                if (y == 1)
+                    marker = mgoogleMap.addMarker(markerOptions);
+                else
+                    marker.setPosition(latLng);
+
+                markerOptionslist.add(marker);
+                SetCameraView(latLng);
 
             } catch (Exception e) {
                 Log.d(TAG, "Error Occurred while adding Markers: " + e.getLocalizedMessage());
@@ -258,6 +262,7 @@ public class Map_views extends AppCompatActivity implements OnMapReadyCallback, 
     private void SetCameraView(LatLng lat) {
         CameraUpdate update = CameraUpdateFactory.newLatLngZoom(lat, 15);
         mgoogleMap.animateCamera(update);
+
     }
 
 
