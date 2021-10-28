@@ -174,8 +174,10 @@ public class Accept_Order extends AppCompatActivity {
 
     private void ADD_DELIVERY_TO_ORDER() {
 
-        FirebaseFirestore.getInstance().collection(getString(R.string.PAID_VENDORS_SECTION)).document("Orders").collection(getIntent().getStringExtra("Client_ID")).document("1A").collection("A1").document(getIntent().getStringExtra("Order_id")).get().addOnCompleteListener(h -> {
+      DocumentReference g =  FirebaseFirestore.getInstance().collection(getString(R.string.PAID_VENDORS_SECTION)).document("Orders").collection(getIntent().getStringExtra("Client_ID")).document("1A").collection("A1").document(getIntent().getStringExtra("Order_id"));
+      g.get().addOnCompleteListener(h -> {
             if (h.isSuccessful()) {
+                Log.d(TAG, "ADD_DELIVERY_TO_ORDER: "+g.getPath());
                 DocumentSnapshot maps = h.getResult();
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
                     if (maps.get("Delivery").toString().equals("0000")) {
@@ -224,14 +226,15 @@ public class Accept_Order extends AppCompatActivity {
 
     private void CREATE_DELIVERY_ORDERS_TABLE() {
         if (latitude != 0 && longitude != 0) {
-            points.add(LOOP_GEO(getIntent().getExtras().getString("Pick_up_geo_point"), "Pickup", getIntent().getStringExtra("user_img_url"), getIntent().getStringExtra("Client_name")));
-            points.add(LOOP_GEO(getIntent().getStringExtra("Drop_off_geo_point"), "Dropoff", getIntent().getStringExtra("Vendor_img_url"), getIntent().getStringExtra("Vendor")));
+            points.add(LOOP_GEO(getIntent().getExtras().getString("Pick_up_geo_point"), "Pickup", getIntent().getStringExtra("Vendor_img_url"), getIntent().getStringExtra("Vendor")));
+            points.add(LOOP_GEO(getIntent().getStringExtra("Drop_off_geo_point"), "Dropoff", getIntent().getStringExtra("user_img_url"), getIntent().getStringExtra("Client_name")));
             points.add(LOOP_GEO("Delivery", "Delivery location", user.getImg_url(), user.getName()));
             DocumentReference documentReference = FirebaseFirestore.getInstance().collection(getString(R.string.DISPATCHED_ORDERS)).document(FirebaseAuth.getInstance().getUid()).collection("orders").document();
             documentReference.set(map(documentReference.getId())).addOnCompleteListener(u -> {
                 if (u.isSuccessful())
                     if (points.size() == 3) {
-                        startActivity(new Intent(getApplicationContext(), Map_views.class).putExtra("GEO_POINTS", new Gson().toJson(points)));
+                        startActivity(new Intent(getApplicationContext(), Map_views.class)
+                                .putExtra("GEO_POINTS", new Gson().toJson(points)).putExtra("total",getIntent().getStringExtra("Total")));
                         LOCAL_CACHE_OPENED_ORDERS_COUNT(1);
                     } else
                         new utils().message2("List not complete ! ", this);
@@ -273,6 +276,7 @@ public class Accept_Order extends AppCompatActivity {
         map.put("Vendor", getIntent().getStringExtra("Vendor"));
         map.put("Vendor_img_url", getIntent().getStringExtra("Vendor_img_url"));
         map.put("Vendor_business_D", getIntent().getStringExtra("Vendor_business_D"));
+        map.put("Total", getIntent().getStringExtra("Total"));
         return map;
     }
 

@@ -50,6 +50,8 @@ public class PushReceiver extends BroadcastReceiver {
         intent1.putExtra("Timestamp", intent.getLongExtra("Timestamp",0));
         intent1.putExtra("doc_id_Gen", intent.getStringExtra("doc_id_Gen"));
         intent1.putExtra("user_img_url", intent.getStringExtra("user_img_url"));
+        intent1.putExtra("Total", intent.getStringExtra("Total"));
+
         int notificationID = new Random().nextInt(3000);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent1, PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context)

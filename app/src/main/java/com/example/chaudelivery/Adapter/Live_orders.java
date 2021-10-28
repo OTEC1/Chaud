@@ -67,10 +67,10 @@ public class Live_orders extends RecyclerView.Adapter<Live_orders.MyHolder> {
         Populate(holder, position);
         holder.order_location.setOnClickListener(u -> {
             holder.progressBar2.setVisibility(View.VISIBLE);
-            points.add(Docs(pack.get(position).get("Pick_up_geo_point").toString(), "Pickup", u, pack.get(position).get("Vendor").toString(),pack.get(position).get("user_img_url").toString()));
-            points.add(Docs(pack.get(position).get("Drop_off_geo_point").toString(), "Dropoff", u, pack.get(position).get("Client_name").toString(),pack.get(position).get("Vendor_img_url").toString()));
+            points.add(Docs(pack.get(position).get("Pick_up_geo_point").toString(), "Pickup", u, pack.get(position).get("Vendor").toString(),pack.get(position).get("Vendor_img_url").toString()));
+            points.add(Docs(pack.get(position).get("Drop_off_geo_point").toString(), "Dropoff", u, pack.get(position).get("Client_name").toString(),pack.get(position).get("user_img_url").toString()));
             if (points.size() == 2) {
-                u.getContext().startActivity(new Intent(u.getContext(), Map_views.class).putExtra("GEO_POINTS", new Gson().toJson(points)));
+                u.getContext().startActivity(new Intent(u.getContext(), Map_views.class).putExtra("GEO_POINTS", new Gson().toJson(points)).putExtra("total",pack.get(position).get("Total").toString()));
                 Constant.VENDOR_NO = pack.get(position).get("Vendor_Phone").toString();
                 }
             });
@@ -95,7 +95,7 @@ public class Live_orders extends RecyclerView.Adapter<Live_orders.MyHolder> {
     }
 
 
-    private UserLocation Docs(String drop, String user, View v, String name, String img) {
+    private UserLocation  Docs(String drop, String user, View v, String name, String img) {
         return new UserLocation(new GeoPoint(Double.parseDouble(drop.substring(drop.indexOf("=") + 1, drop.indexOf(","))), Double.parseDouble(drop.substring(drop.lastIndexOf("=") + 1, drop.length() - 1))), null, new utils().SERVE(user, name,img));
     }
 

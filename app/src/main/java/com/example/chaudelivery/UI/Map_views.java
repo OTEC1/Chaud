@@ -7,6 +7,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -16,6 +17,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.example.chaudelivery.Adapter.Live_orders;
 import com.example.chaudelivery.R;
@@ -61,6 +63,7 @@ public class Map_views extends AppCompatActivity implements OnMapReadyCallback, 
     private GoogleApiClient apiClient;
     private MarkerOptions markerOptions;
     private Button dialer;
+    private TextView total;
 
 
     private List<UserLocation> userlocations = new ArrayList<>();
@@ -74,15 +77,18 @@ public class Map_views extends AppCompatActivity implements OnMapReadyCallback, 
     private int y = 1;
 
 
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map_views);
         mapView = findViewById(R.id.map_display_order_engagement);
         dialer = findViewById(R.id.call);
+        total = findViewById(R.id.total_payment);
 
         if (getIntent().getExtras() != null) {
             String c = getIntent().getStringExtra("GEO_POINTS");
+            total.setText("Total Payment: N" + getIntent().getStringExtra("total"));
             Type type = new TypeToken<List<UserLocation>>() {}.getType();
             userlocations.addAll(new Gson().fromJson(String.valueOf(c), type));
         }
@@ -199,8 +205,6 @@ public class Map_views extends AppCompatActivity implements OnMapReadyCallback, 
     }
 
 
-
-
     @Override
     public void onLocationChanged(@NonNull Location location) {
 
@@ -228,14 +232,11 @@ public class Map_views extends AppCompatActivity implements OnMapReadyCallback, 
                     snippet = "My current Location";
                     markerOptions.icon(new utils().return_bit_from_url(R.drawable.ic_baseline_electric_bike_24, this));
                     latLng = markerOptions.position(new LatLng(latLngs.get(latLngs.size() - 1).latitude, latLngs.get(latLngs.size() - 1).longitude)).getPosition();
-                }
-                else if (user.getUser().getName().equals("Dropoff")) {
+                } else if (user.getUser().getName().equals("Dropoff")) {
                     snippet = user.getUser().getUsername() + " current Location";
                     markerOptions.icon(new utils().return_bit_from_url(R.drawable.ic_baseline_account_location, this));
                     latLng = markerOptions.position(new LatLng(latLngs.get(1).latitude, latLngs.get(1).longitude)).getPosition();
-                }
-
-                else if (user.getUser().getName().equals("Pickup")) {
+                } else if (user.getUser().getName().equals("Pickup")) {
                     snippet = user.getUser().getUsername() + " current Location";
                     markerOptions.icon(new utils().return_bit_from_url(R.drawable.ic_baseline_storefront_24, this));
                     latLng = markerOptions.position(new LatLng(latLngs.get(0).latitude, latLngs.get(0).longitude)).getPosition();

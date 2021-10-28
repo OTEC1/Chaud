@@ -145,7 +145,6 @@ public class MainActivity extends AppCompatActivity {
         intent.setClass(this, PushReceiver.class);
         intent.putExtra("O", "1");
         this.sendBroadcast(intent);
-        // aboolean = true;
         super.onDestroy();
     }
 
