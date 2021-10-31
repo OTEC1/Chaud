@@ -233,11 +233,11 @@ public class Map_views extends AppCompatActivity implements OnMapReadyCallback, 
                     markerOptions.icon(new utils().return_bit_from_url(R.drawable.ic_baseline_electric_bike_24, this));
                     latLng = markerOptions.position(new LatLng(latLngs.get(latLngs.size() - 1).latitude, latLngs.get(latLngs.size() - 1).longitude)).getPosition();
                 } else if (user.getUser().getName().equals("Dropoff")) {
-                    snippet = user.getUser().getUsername() + " current Location";
+                    snippet = user.getUser().getUsername() + " last known location";
                     markerOptions.icon(new utils().return_bit_from_url(R.drawable.ic_baseline_account_location, this));
                     latLng = markerOptions.position(new LatLng(latLngs.get(1).latitude, latLngs.get(1).longitude)).getPosition();
                 } else if (user.getUser().getName().equals("Pickup")) {
-                    snippet = user.getUser().getUsername() + " current Location";
+                    snippet = user.getUser().getUsername() + " last known location";
                     markerOptions.icon(new utils().return_bit_from_url(R.drawable.ic_baseline_storefront_24, this));
                     latLng = markerOptions.position(new LatLng(latLngs.get(0).latitude, latLngs.get(0).longitude)).getPosition();
                 }
