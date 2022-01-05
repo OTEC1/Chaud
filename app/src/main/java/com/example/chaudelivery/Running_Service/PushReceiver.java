@@ -9,8 +9,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.media.RingtoneManager;
+import android.os.Build;
 import android.util.Log;
 
+import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
 import com.example.chaudelivery.R;
@@ -31,9 +33,10 @@ public class PushReceiver extends BroadcastReceiver {
 
     private String TAG = "PushReceiver";
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onReceive(Context context, Intent intent) {
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
         Intent intent1 = new Intent(context, Accept_Order.class);
         intent1.putExtra("Vendor",intent.getStringExtra("Vendor"));
         intent1.putExtra("Vendor_img_url", intent.getStringExtra("Vendor_img_url"));
@@ -56,7 +59,8 @@ public class PushReceiver extends BroadcastReceiver {
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent1, PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
                 .setAutoCancel(true)
-                .setSmallIcon(R.drawable.notify)
+                .setLargeIcon(BitmapFactory.decodeResource(context.getResources(),R.drawable.ic_baseline_fastfood_24))
+                .setSmallIcon(R.drawable.ic_baseline_fastfood_24)
                 .setContentTitle(NOTIFICATION_TITLE)
                 .setContentText(intent.getStringExtra("Vendor"))
                 .setLights(Color.RED, 1000, 1000)
@@ -75,6 +79,8 @@ public class PushReceiver extends BroadcastReceiver {
         if (intent.getStringExtra("O") != null)
             if (intent.getStringExtra("O").equals("1"))
                 notificationManager.cancelAll();
+
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
     }
 
 

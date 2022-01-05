@@ -83,7 +83,6 @@ public class MainActivity extends AppCompatActivity {
                     } else
                         getLocationPermission();
                 }
-
             } else
                 new utils().message2("Pls sign in", this);
         else
