@@ -3,6 +3,7 @@ package com.example.chaudelivery.Running_Service;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.chaudelivery.R;
 import com.example.chaudelivery.utils.utils;
@@ -37,20 +38,11 @@ public class RegisterUser extends AsyncTask<Void,Void,Object> {
     protected void onPostExecute(Object o) {
 
        if(o instanceof Exception){
-           new utils().init(activity.getApplicationContext())
-                   .edit().putBoolean(activity.getString(R.string.DEVICE_REG_TOKEN),false).apply();
-
-           new utils().init(activity.getApplicationContext())
-                   .edit().putString(activity.getString(R.string.DEVICE_TOKEN),"").apply();
+           new utils().init(activity.getApplicationContext()).edit().putString(activity.getString(R.string.DEVICE_TOKEN),"").apply();
+           Toast.makeText(activity, "Error Occurred couldn't not get device token !", Toast.LENGTH_SHORT).show();
        }
-       else{
-           new utils().init(activity.getApplicationContext())
-                   .edit().putBoolean(activity.getString(R.string.DEVICE_REG_TOKEN),true).apply();
-
-           new utils().init(activity.getApplicationContext())
-                   .edit().putString(activity.getString(R.string.DEVICE_TOKEN),String.valueOf(o)).apply();
-       }
-
-
+       else
+           new utils().init(activity.getApplicationContext()).edit().putString(activity.getString(R.string.DEVICE_TOKEN),String.valueOf(o)).apply();
+        Log.d(TAG, "onPostExecute: "+o);
     }
 }

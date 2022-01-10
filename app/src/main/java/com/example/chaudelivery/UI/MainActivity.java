@@ -93,6 +93,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        NOTIFICATION_LISTER();
         setContentView(R.layout.activity_main);
         fire = FirebaseFirestore.getInstance();
 
@@ -102,10 +104,10 @@ public class MainActivity extends AppCompatActivity {
             LOGIN();
         bottomNavigationView = findViewById(R.id.bottomNav);
         new utils().bottom_nav(bottomNavigationView, this, sp);
-        NOTIFICATION_LISTER();
         POLICY_SERVICE();
         CHECK_FOR_PERMISSION();
         TOKEN();
+
     }
 
 

@@ -206,9 +206,7 @@ public class utils {
 
 
     //Delivery Guy details
-    public void  CACHE_VENDOR(User user, AppCompatActivity context, int i, String tag, ProgressBar progressBar) {
-        if (i == 0)
-            init(context).edit().putString(tag, null).apply();
+    public void  CACHE_VENDOR(User user, AppCompatActivity context, String tag, ProgressBar progressBar) {
         String area = new Gson().toJson(user);
         init(context).edit().putString(tag, area).apply();
         context.startActivity(new Intent(context, MainActivity.class));

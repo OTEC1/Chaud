@@ -7,7 +7,6 @@
     <string name="register">Register</string>
     <string name="email_registration">Sign up</string>
     <string name="confirm_password">Confirm Password</string>
-    <string name="DEVICE_REG_TOKEN">DEVICE_REG_TOKEN</string>
     <string name="DEVICE_TOKEN">DEVICE_TOKEN</string>
     <string name="forgot_password">Forgot Password</string>
     <string name="forgot_email">Email</string>

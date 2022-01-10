@@ -3,6 +3,8 @@ package com.example.chaudelivery.UI;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -25,6 +27,8 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.example.chaudelivery.R;
+import com.example.chaudelivery.Running_Service.Keep_alive;
+import com.example.chaudelivery.Running_Service.RegisterUser;
 import com.example.chaudelivery.utils.Find;
 import com.example.chaudelivery.model.User;
 import com.example.chaudelivery.utils.utils;
@@ -35,6 +39,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.util.Objects;
+
+import me.pushy.sdk.Pushy;
 
 import static com.example.chaudelivery.utils.Constant.PICK_IMAGE;
 
@@ -72,8 +78,8 @@ public class Register extends AppCompatActivity {
 
         Register.setOnClickListener(i -> {
 
-            if (!new utils().init(getApplicationContext()).getBoolean(getString(R.string.DEVICE_REG_TOKEN), false))
-                new utils().message("Device not Registered Pls Relaunch or Reinstall App.", getApplicationContext());
+            if(new utils().init(getApplicationContext()).getString(getString(R.string.DEVICE_TOKEN), "").trim().isEmpty())
+                   NOTIFICATION_LISTER();
             else if (new utils().verify(name, email, phone, pass, confirm_pass, delivery_details, getApplicationContext()))
                 make_post_on_location(name.getText().toString(), email.getText().toString(), phone.getText().toString(), pass.getText().toString());
 
@@ -121,7 +127,7 @@ public class Register extends AppCompatActivity {
                         user.setPhone(phone);
                         user.setUser_id(FirebaseAuth.getInstance().getUid());
                         user.setMember_T(" I agree to Terms and Condition");
-                        user.setToken("");
+                        user.setToken(new utils().init(getApplicationContext()).getString(getString(R.string.DEVICE_TOKEN), ""));
                         user.setImg_url(p);
                         user.setDelivery_details(delivery_details.getText().toString());
 
@@ -233,6 +239,33 @@ public class Register extends AppCompatActivity {
 
     }
     //-----------------------------------------------End S3 Query------------------------------------//
+
+    private void NOTIFICATION_LISTER() {
+
+        Keep_alive keep_alive = new Keep_alive();
+        Intent intent = new Intent(this, keep_alive.getClass());
+        if (!isServicerunning(keep_alive.getClass()))
+            startService(intent);
+
+        if (!Pushy.isRegistered(getApplicationContext()))
+            new RegisterUser(this).execute();
+        Pushy.listen(this);
+    }
+
+
+    private boolean isServicerunning(Class<? extends Keep_alive> aClass) {
+
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo serviceInfo : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (aClass.getName().equals(serviceInfo.service.getClassName())) {
+                Log.d(TAG, " Service Already Running");
+                return true;
+            }
+            Log.d(TAG, " Service Not Running");
+        }
+        return false;
+    }
+
 
 
     @Override

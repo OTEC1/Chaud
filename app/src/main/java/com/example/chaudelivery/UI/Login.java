@@ -3,6 +3,8 @@ package com.example.chaudelivery.UI;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,6 +16,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.chaudelivery.R;
+import com.example.chaudelivery.Running_Service.Keep_alive;
+import com.example.chaudelivery.Running_Service.RegisterUser;
 import com.example.chaudelivery.model.User;
 import com.example.chaudelivery.utils.UserLocation;
 import com.example.chaudelivery.utils.utils;
@@ -22,6 +26,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import me.pushy.sdk.Pushy;
 
 import static com.example.chaudelivery.utils.Constant.Time_lapsed;
 
@@ -34,6 +40,7 @@ public class Login extends AppCompatActivity {
     private FirebaseFirestore firebaseFirestore;
     private User user;
     private Map<String, Object> token;
+
 
 
     private long back_pressed = 2000;
@@ -89,7 +96,10 @@ public class Login extends AppCompatActivity {
         FirebaseAuth.getInstance().signInWithEmailAndPassword(email.getText().toString(), pass.getText().toString())
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful())
-                        RUNCHECK(new utils().init(getApplicationContext()).getString(getString(R.string.LAST_SIGN_IN_DELIVERY), ""));
+                            if(new utils().init(getApplicationContext()).getString(getString(R.string.LAST_SIGN_IN_DELIVERY),"").trim().length()>0)
+                               RUNCHECK(new utils().init(getApplicationContext()).getString(getString(R.string.LAST_SIGN_IN_DELIVERY), ""));
+                                else
+                                GET_SIGNED_IN_USER_DETAILS();
                     else
                         message("Failed " + task.getException());
                 }).addOnFailureListener(e -> {
@@ -103,18 +113,18 @@ public class Login extends AppCompatActivity {
 
     private void RUNCHECK(String last_signed_in_user) {
         Log.d(TAG, "RUNCHECK: " + last_signed_in_user);
-        if (!FirebaseAuth.getInstance().getUid().equals(last_signed_in_user))
+        if (!FirebaseAuth.getInstance().getUid().equals(last_signed_in_user)) {
             firebaseFirestore.collection(getString(R.string.DELIVERY_LOCATION)).get().addOnCompleteListener(s -> {
-                if (s.isSuccessful())
+                if (s.isSuccessful()) {
                     if (s.getResult().getDocuments().size() > 0 && last_signed_in_user.trim().length() > 0)
                         CLEAR_LAST_SIGN_IN_USER_TOKEN_LOCATION(last_signed_in_user);
                     else
                         GET_SIGNED_IN_USER_DETAILS();
 
-                else
+                } else
                     new utils().message2("Error occurred " + s.getException(), this);
             });
-        else
+        }else
             GET_SIGNED_IN_USER_DETAILS();
 
     }
@@ -187,7 +197,7 @@ public class Login extends AppCompatActivity {
         firebaseFirestore.collection(getString(R.string.DELIVERY_REG)).document(FirebaseAuth.getInstance().getUid())
                 .get().addOnCompleteListener(y -> {
             if (y.isSuccessful())
-                new utils().CACHE_VENDOR(y.getResult().toObject(User.class), this, 0, getString(R.string.DELIVERY), progressBar);
+                new utils().CACHE_VENDOR(y.getResult().toObject(User.class), this,  getString(R.string.DELIVERY), progressBar);
             else
                 new utils().message2("Error occurred " + y.getException(), this);
         });
@@ -215,6 +225,35 @@ public class Login extends AppCompatActivity {
     private void hideDialog() {
         progressBar.setVisibility(View.INVISIBLE);
     }
+
+
+
+    private void NOTIFICATION_LISTER() {
+
+        Keep_alive keep_alive = new Keep_alive();
+        Intent intent = new Intent(this, keep_alive.getClass());
+        if (!isServicerunning(keep_alive.getClass()))
+            startService(intent);
+
+        if (!Pushy.isRegistered(getApplicationContext()))
+            new RegisterUser(this).execute();
+        Pushy.listen(this);
+    }
+
+
+    private boolean isServicerunning(Class<? extends Keep_alive> aClass) {
+
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo serviceInfo : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (aClass.getName().equals(serviceInfo.service.getClassName())) {
+                Log.d(TAG, " Service Already Running");
+                return true;
+            }
+            Log.d(TAG, " Service Not Running");
+        }
+        return false;
+    }
+
 
 
 //     progressBar.setVisibility(View.INVISIBLE);
