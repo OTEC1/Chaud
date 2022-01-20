@@ -24,6 +24,7 @@ import com.example.chaudelivery.model.User;
 import com.example.chaudelivery.utils.Constant;
 import com.example.chaudelivery.utils.UserLocation;
 import com.example.chaudelivery.utils.utils;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.gson.Gson;
@@ -45,11 +46,13 @@ public class Live_orders extends RecyclerView.Adapter<Live_orders.MyHolder> {
 
     private User user1;
     private String TAG = "Live_orders";
+    private int n;
 
 
-    public Live_orders(Context context, List<Map<String, Object>> pack) {
+    public Live_orders(Context context, List<Map<String, Object>> pack,int n) {
         this.context = context;
         this.pack = pack;
+        this.n = n;
     }
 
     @NonNull
@@ -61,30 +64,36 @@ public class Live_orders extends RecyclerView.Adapter<Live_orders.MyHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull MyHolder holder, int position) {
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
             user1 = new Accept_Order().call(holder.completed_order.getContext());
 
-        Populate(holder, position);
-        holder.order_location.setOnClickListener(u -> {
-            holder.progressBar2.setVisibility(View.VISIBLE);
-            points.add(Docs(pack.get(position).get("Pick_up_geo_point").toString(), "Pickup", u, pack.get(position).get("Vendor").toString(),pack.get(position).get("Vendor_img_url").toString()));
-            points.add(Docs(pack.get(position).get("Drop_off_geo_point").toString(), "Dropoff", u, pack.get(position).get("Client_name").toString(),pack.get(position).get("user_img_url").toString()));
-            if (points.size() == 2) {
-                u.getContext().startActivity(new Intent(u.getContext(), Map_views.class).putExtra("GEO_POINTS", new Gson().toJson(points)).putExtra("total",pack.get(position).get("Total").toString()));
-                Constant.VENDOR_NO = pack.get(position).get("Vendor_Phone").toString();
-                }
+        if(n == 1) {
+            holder.completed_order.setVisibility(View.INVISIBLE);
+            holder.dialer.setVisibility(View.INVISIBLE);
+        }
+
+            Populate(holder, position);
+            holder.order_location.setOnClickListener(u -> {
+                holder.progressBar2.setVisibility(View.VISIBLE);
+                points.add(Docs(pack.get(position).get("Pick_up_geo_point").toString(), "Pickup", u, pack.get(position).get("Vendor").toString(),pack.get(position).get("Vendor_img_url").toString()));
+                points.add(Docs(pack.get(position).get("Drop_off_geo_point").toString(), "Dropoff", u, pack.get(position).get("Client_name").toString(),pack.get(position).get("user_img_url").toString()));
+                if (points.size() == 2) {
+                    u.getContext().startActivity(new Intent(u.getContext(), Map_views.class).putExtra("GEO_POINTS", new Gson().toJson(points)).putExtra("total",pack.get(position).get("Total").toString()));
+                    Constant.VENDOR_NO = pack.get(position).get("Vendor_Phone").toString();
+                    }
+                });
+
+
+            holder.completed_order.setOnClickListener(y -> {
+                holder.progressBar2.setVisibility(View.VISIBLE);
+                SEND_NOTIFICATION(pack.get(position).get("Client_ID"), y, holder.progressBar2, position,holder);
             });
 
 
-        holder.completed_order.setOnClickListener(y -> {
-            holder.progressBar2.setVisibility(View.VISIBLE);
-            SEND_NOTIFICATION(pack.get(position).get("Client_ID"), y, holder, position);
-        });
-
-
-        holder.dialer.setOnClickListener(u -> {
-            start_dialer(pack.get(position).get("Drop_off_phone_no").toString(), holder.dialer.getContext());
-        });
+            holder.dialer.setOnClickListener(u -> {
+                start_dialer(pack.get(position).get("Drop_off_phone_no").toString(), holder.dialer.getContext());
+            });
     }
 
 
@@ -134,7 +143,7 @@ public class Live_orders extends RecyclerView.Adapter<Live_orders.MyHolder> {
     }
 
 
-    private void SEND_NOTIFICATION(Object client_id, View view, MyHolder holder, int position) {
+    private void SEND_NOTIFICATION(Object client_id, View view, ProgressBar progressBar, int position,MyHolder holder) {
 
         FirebaseFirestore.getInstance().collection(view.getContext().getString(R.string.USER_REG)).document(client_id.toString()).get()
                 .addOnCompleteListener(u -> {
@@ -149,14 +158,17 @@ public class Live_orders extends RecyclerView.Adapter<Live_orders.MyHolder> {
                             pay_load.put("Vendor_ID", pack.get(position).get("Vendor_ID"));
                             pay_load.put("Client_ID", pack.get(position).get("Client_ID"));
                             pay_load.put("doc_id_Gen", pack.get(position).get("doc_id_Gen"));
+                            pay_load.put("delivery_doc_id", pack.get(position).get("doc_created_id"));
+                            pay_load.put("deliveryGuyID", FirebaseAuth.getInstance().getUid());
                             Pusher.pushrequest push = new Pusher.pushrequest(pay_load, user.getToken());
                             try {
                                 Pusher.sendPush(push);
                                 new utils().message("Notification sent to " + user.getUsername(), view.getContext());
+                                progressBar.setVisibility(View.INVISIBLE);
                                 REMOVE(holder.completed_order.getContext());
-                                holder.progressBar2.setVisibility(View.INVISIBLE);
                             } catch (Exception ex) {
-                                Log.d(TAG, "SEND_NOTIFICATION: " + ex.toString());
+                                Log.d(TAG,"Error occurred sending notification to  User "+ex.getLocalizedMessage());
+                                progressBar.setVisibility(View.INVISIBLE);
                             }
                         } else {
                             new utils().message("User: " + user.getUsername() + " is offline ", view.getContext());

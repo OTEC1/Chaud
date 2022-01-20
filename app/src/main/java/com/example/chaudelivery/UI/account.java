@@ -6,6 +6,8 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,28 +17,41 @@ import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.example.chaudelivery.Adapter.Live_orders;
 import com.example.chaudelivery.R;
 import com.example.chaudelivery.model.User;
 import com.example.chaudelivery.utils.Constant;
 import com.example.chaudelivery.utils.utils;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
 public class account extends Fragment {
 
-
-    //------------check if sign in   perform business logic-------------------------//
     private TextView name, phone, address, email;
     private Button bad, report;
     private RatingBar fair_and_good;
     private CircleImageView circleImageView;
-    private ProgressBar progressBar;
+    private ProgressBar progressBar,progressBar1;
+
+
+
+    private RecyclerView recyclerView;
+    private Live_orders live_orders;
+    private List<Map<String,Object>> os;
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -51,10 +66,14 @@ public class account extends Fragment {
         bad = (Button) view.findViewById(R.id.bad_review_count);
         report = (Button) view.findViewById(R.id.report);
         progressBar = (ProgressBar) view.findViewById(R.id.progressBar8);
+        progressBar1 = (ProgressBar) view.findViewById(R.id.progressBar1);
+        recyclerView = (RecyclerView) view.findViewById(R.id.completed_orders);
 
 
-        if (FirebaseAuth.getInstance().getUid() != null)
+        if (FirebaseAuth.getInstance().getUid() != null) {
             LOAD_IN_DELIVERY_DETAILS();
+            api_call();
+        }
         else
             new utils().message2("Pls Sign in", requireActivity());
 
@@ -91,6 +110,32 @@ public class account extends Fragment {
                     }
                 });
     }
+
+    private void api_call() {
+        FirebaseFirestore.getInstance().collection(getString(R.string.DISPATCHED_ORDERS)).document(FirebaseAuth.getInstance().getUid())
+                .collection("orders").orderBy("Timestamp", Query.Direction.DESCENDING)
+                .addSnapshotListener((value, error) -> {
+                    os = new ArrayList<>();
+                    assert value != null;
+                    List<DocumentSnapshot> obj = value.getDocuments();
+                    for (DocumentSnapshot d : obj) {
+                        if(d.getBoolean("Received")) {
+                            Map<String, Object> g = d.getData();
+                            os.add(g);
+                        }
+                    }
+                    setLayout(os);
+                });
+    }
+
+    private void setLayout(List<Map<String, Object>> obj) {
+        LinearLayoutManager manager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+        live_orders = new Live_orders(getContext(), obj,1);
+        recyclerView.setLayoutManager(manager);
+        recyclerView.setAdapter(live_orders);
+        progressBar1.setVisibility(View.GONE);
+    }
+
 
 
 

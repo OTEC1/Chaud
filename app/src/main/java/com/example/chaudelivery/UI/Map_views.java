@@ -11,6 +11,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.net.Uri;
@@ -38,6 +39,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.gson.Gson;
@@ -64,11 +67,14 @@ public class Map_views extends AppCompatActivity implements OnMapReadyCallback, 
     private MarkerOptions markerOptions;
     private Button dialer;
     private TextView total;
+    private PolylineOptions options;
+    private Polyline polyline;
 
 
     private List<UserLocation> userlocations = new ArrayList<>();
     private List<Marker> markerOptionslist = new ArrayList<>();
-    private List<LatLng> latLngs = new ArrayList<>();
+    private List<LatLng> latLngs;
+
 
 
     private LocationRequest mLocationRequest;
@@ -122,8 +128,6 @@ public class Map_views extends AppCompatActivity implements OnMapReadyCallback, 
     public void onResume() {
         super.onResume();
         mapView.onResume();
-        // startUserLocationsRunnable();
-
     }
 
 
@@ -138,7 +142,6 @@ public class Map_views extends AppCompatActivity implements OnMapReadyCallback, 
     public void onStop() {
         super.onStop();
         mapView.onStop();
-        //stopLocationUpdates();
     }
 
 
@@ -146,7 +149,6 @@ public class Map_views extends AppCompatActivity implements OnMapReadyCallback, 
     public void onPause() {
         super.onPause();
         mapView.onPause();
-        //stopLocationUpdates();
     }
 
 
@@ -161,7 +163,6 @@ public class Map_views extends AppCompatActivity implements OnMapReadyCallback, 
     public void onDestroy() {
         super.onDestroy();
         mapView.onDestroy();
-        //stopLocationUpdates();
     }
 
 
@@ -224,6 +225,9 @@ public class Map_views extends AppCompatActivity implements OnMapReadyCallback, 
 
     private void addMapMarkers(List<UserLocation> user_locations, int y) {
 
+        latLngs = new ArrayList<>();
+        options = new PolylineOptions();
+
         for (UserLocation user : user_locations) {
             String snippet = "";
             latLngs.add(new LatLng(user.getGeo_point().getLatitude(), user.getGeo_point().getLongitude()));
@@ -232,29 +236,40 @@ public class Map_views extends AppCompatActivity implements OnMapReadyCallback, 
                     snippet = "My current Location";
                     markerOptions.icon(new utils().return_bit_from_url(R.drawable.ic_baseline_electric_bike_24, this));
                     latLng = markerOptions.position(new LatLng(latLngs.get(latLngs.size() - 1).latitude, latLngs.get(latLngs.size() - 1).longitude)).getPosition();
+                        options.add(new LatLng(latLng.latitude,latLng.longitude));
                 } else if (user.getUser().getName().equals("Dropoff")) {
                     snippet = user.getUser().getUsername() + " last known location";
                     markerOptions.icon(new utils().return_bit_from_url(R.drawable.ic_baseline_account_location, this));
                     latLng = markerOptions.position(new LatLng(latLngs.get(1).latitude, latLngs.get(1).longitude)).getPosition();
+                        options.add(new LatLng(latLng.latitude,latLng.longitude));
                 } else if (user.getUser().getName().equals("Pickup")) {
                     snippet = user.getUser().getUsername() + " last known location";
                     markerOptions.icon(new utils().return_bit_from_url(R.drawable.ic_baseline_storefront_24, this));
                     latLng = markerOptions.position(new LatLng(latLngs.get(0).latitude, latLngs.get(0).longitude)).getPosition();
+                        options.add(new LatLng(latLng.latitude,latLng.longitude));
                 }
 
+                options.width(3);
+                options.color(Color.parseColor("#4d94ff"));
                 markerOptions.title(snippet);
-                if (y == 1)
-                    marker = mgoogleMap.addMarker(markerOptions);
-                else
-                    marker.setPosition(latLng);
-
                 markerOptionslist.add(marker);
                 SetCameraView(latLng);
+                if (y == 1) {
+                    marker = mgoogleMap.addMarker(markerOptions);
+                    polyline = mgoogleMap.addPolyline(options);
+                }else {
+                    marker.setPosition(latLng);
+                    polyline.setPoints(latLngs);
+                }
+
+
 
             } catch (Exception e) {
                 Log.d(TAG, "Error Occurred while adding Markers: " + e.getLocalizedMessage());
             }
         }
+        if(userlocations.size() > 2)
+            userlocations.remove(userlocations.size()-1);
 
 
     }

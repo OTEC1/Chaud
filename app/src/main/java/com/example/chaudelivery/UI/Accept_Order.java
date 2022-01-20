@@ -230,22 +230,22 @@ public class Accept_Order extends AppCompatActivity {
             points.add(LOOP_GEO(getIntent().getStringExtra("Drop_off_geo_point"), "Dropoff", getIntent().getStringExtra("user_img_url"), getIntent().getStringExtra("Client_name")));
             points.add(LOOP_GEO("Delivery", "Delivery location", user.getImg_url(), user.getName()));
             DocumentReference documentReference = FirebaseFirestore.getInstance().collection(getString(R.string.DISPATCHED_ORDERS)).document(FirebaseAuth.getInstance().getUid()).collection("orders").document();
-            documentReference.set(map(documentReference.getId())).addOnCompleteListener(u -> {
-                if (u.isSuccessful())
-                    if (points.size() == 3) {
-                        startActivity(new Intent(getApplicationContext(), Map_views.class)
-                                .putExtra("GEO_POINTS", new Gson().toJson(points)).putExtra("total",getIntent().getStringExtra("Total")));
-                        LOCAL_CACHE_OPENED_ORDERS_COUNT(1);
-                    } else
-                        new utils().message2("List not complete ! ", this);
-                else {
-                    Log.d(TAG, "CREATE_DELIVERY_EXCEPTION: " + u.getException());
-                    progressDialog.dismiss();
-                }
-
-            });
-        } else
-            new utils().message2("GeoPoint is null ", this);
+            documentReference.set(map(documentReference.getId()))
+                     .addOnCompleteListener(u -> {
+                         if (u.isSuccessful())
+                            if (points.size() == 3) {
+                                startActivity(new Intent(getApplicationContext(), Map_views.class)
+                                        .putExtra("GEO_POINTS", new Gson().toJson(points)).putExtra("total",getIntent().getStringExtra("Total")));
+                                LOCAL_CACHE_OPENED_ORDERS_COUNT(1);
+                            } else
+                                new utils().message2("List not complete ! ", this);
+                        else {
+                            Log.d(TAG, "CREATE_DELIVERY_EXCEPTION: " + u.getException());
+                            progressDialog.dismiss();
+                        }
+                 });
+          } else
+                new utils().message2("GeoPoint is null ", this);
     }
 
     private void LOCAL_CACHE_OPENED_ORDERS_COUNT(int i) {
@@ -277,6 +277,7 @@ public class Accept_Order extends AppCompatActivity {
         map.put("Vendor_img_url", getIntent().getStringExtra("Vendor_img_url"));
         map.put("Vendor_business_D", getIntent().getStringExtra("Vendor_business_D"));
         map.put("Total", getIntent().getStringExtra("Total"));
+        map.put("Received", false);
         return map;
     }
 

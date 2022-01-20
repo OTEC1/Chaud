@@ -6,6 +6,13 @@
     android:layout_height="match_parent"
     tools:context=".UI.account">
 
+
+    <ProgressBar
+        android:id="@+id/progressBar1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"/>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -126,14 +133,19 @@
         </RelativeLayout>
 
 
+
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/completed_orders"
             android:layout_width="match_parent"
             android:layout_height="0sp"
             android:layout_gravity="bottom"
-            android:layout_weight="60" />
+            android:layout_weight="60"/>
 
 
     </LinearLayout>
+
+
+
 
 </FrameLayout>

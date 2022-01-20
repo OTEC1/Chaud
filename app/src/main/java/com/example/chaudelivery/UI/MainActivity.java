@@ -126,7 +126,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     private boolean isServicerunning(Class<? extends Keep_alive> aClass) {
-
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo serviceInfo : manager.getRunningServices(Integer.MAX_VALUE)) {
             if (aClass.getName().equals(serviceInfo.service.getClassName())) {

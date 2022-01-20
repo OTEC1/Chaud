@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,27 +44,34 @@ public class notification extends Fragment {
         return view;
     }
 
+
+
+    //Call client ID geo point & vendor id geo_point b4 list population
     private void api_call1() {
+        FirebaseFirestore.getInstance().collection(getString(R.string.DISPATCHED_ORDERS)).document(FirebaseAuth.getInstance().getUid())
+                     .collection("orders").orderBy("Timestamp", Query.Direction.DESCENDING)
+                         .addSnapshotListener((value, error) -> {
+                                    os = new ArrayList<>();
+                                    assert value != null;
+                                    List<DocumentSnapshot> obj = value.getDocuments();
+                                    for (DocumentSnapshot d : obj) {
+                                        if(!d.getBoolean("Received")) {
+                                            Map<String, Object> g = d.getData();
+                                            os.add(g);
+                                        }
+                                    }
+                                    setLayout(os);
+                         });
+             }
 
-        FirebaseFirestore.getInstance().collection(getString(R.string.DISPATCHED_ORDERS)).document(FirebaseAuth.getInstance().getUid()).collection("orders").orderBy("Timestamp", Query.Direction.DESCENDING)
-                .addSnapshotListener((value, error) -> {
-                    os = new ArrayList<>();
-                    if (FirebaseAuth.getInstance().getUid() != null) {
-                        assert value != null;
-                        List<DocumentSnapshot> obj = value.getDocuments();
-                        for (DocumentSnapshot d : obj) {
-                            Map<String, Object> g = d.getData();
-                            //Call client ID geo point & vendor id geo_point b4 list population
-                            os.add(g);
-                            setLayout(os);
-                        }
-                    }
-                });
-    }
 
+
+
+
+    //SET LAYOUT
     private void setLayout(List<Map<String, Object>> obj) {
         LinearLayoutManager manager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-        live_orders = new Live_orders(getContext(), obj);
+        live_orders = new Live_orders(getContext(), obj,0);
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(live_orders);
         progressBar.setVisibility(View.GONE);
