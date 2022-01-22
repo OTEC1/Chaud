@@ -22,6 +22,7 @@ public class Constant {
 
 
     //Must be Encrypted Values//
+    public static String FIREBASE_CLOUD_FUNCTION_URL = "https://us-central1-chau02-b4019.cloudfunctions.net/";
     public static String IMG_URL = "https://chau.s3.eu-west-3.amazonaws.com/";
     public  static  String ADMIN_CHANNEL_ID="chau_channel";
     public  static CharSequence CHANNEL_NAME = "Chau Paid Orders Channel";

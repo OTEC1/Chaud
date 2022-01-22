@@ -69,6 +69,11 @@ public class utils {
     }
 
 
+    public  void Long_message (String string, Context context){
+        Toast.makeText(context, string, Toast.LENGTH_LONG).show();
+    }
+
+
 
 
     //Bottom  Nav

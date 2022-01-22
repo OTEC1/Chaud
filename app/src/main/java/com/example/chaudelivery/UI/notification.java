@@ -39,8 +39,8 @@ public class notification extends Fragment {
         View view = inflater.inflate(R.layout.fragment_notification, container, false);
         recyclerView = view.findViewById(R.id.main_recycle_view);
         progressBar = view.findViewById(R.id.progressBar);
-        if (FirebaseAuth.getInstance().getUid() != null)
-            api_call1();
+        if (FirebaseAuth.getInstance().getCurrentUser() != null)
+                api_call1();
         return view;
     }
 
@@ -51,16 +51,18 @@ public class notification extends Fragment {
         FirebaseFirestore.getInstance().collection(getString(R.string.DISPATCHED_ORDERS)).document(FirebaseAuth.getInstance().getUid())
                      .collection("orders").orderBy("Timestamp", Query.Direction.DESCENDING)
                          .addSnapshotListener((value, error) -> {
+                                if(FirebaseAuth.getInstance().getCurrentUser()!= null) {
                                     os = new ArrayList<>();
                                     assert value != null;
                                     List<DocumentSnapshot> obj = value.getDocuments();
                                     for (DocumentSnapshot d : obj) {
-                                        if(!d.getBoolean("Received")) {
+                                        if (!d.getBoolean("Received")) {
                                             Map<String, Object> g = d.getData();
                                             os.add(g);
                                         }
                                     }
                                     setLayout(os);
+                                }
                          });
              }
 
